@@ -1,0 +1,4 @@
+alma.txt
+files.txt
+kecske.txt
+m.txt
