@@ -1,13 +1,13 @@
 #include <stdio.h>
+#include <stdint.h>
 
 int main() {
 
-	float w = 24;
-	int out = 0;
-	// if w is even increment out by one
-    int w1 = w;
-	if (w1%2 == 0) {out++;}
-	printf("%d", out);
+	uint16_t v = 426;
+	// print 'Yeah!' if dividable by 4 but print 'End of program' after regardless
+
+	if(v % 4 == 0) { printf("Yeah!"); }
+	else{ printf("End of program");}
 
 	return 0;
 
