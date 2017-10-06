@@ -10,7 +10,7 @@ But this time, use switch
 
 int main() {
 
-    for(int x = 0; x <101; x++)
+    for(int x = 1; x <101; x++)
     {
 
     switch (x%15)
@@ -31,8 +31,6 @@ int main() {
             default :
                 printf("%d\n",x);
             }
-
-    printf("%d\n", x);
 
     }
 
