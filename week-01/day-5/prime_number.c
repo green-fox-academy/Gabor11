@@ -16,6 +16,7 @@ void main()
     int to = 1000;
     int i = from;
     int j = 2;
+    int count =0;
 
     // start trials of numbers from 'i' = 'from' to 'to'
     while (i < to){
@@ -31,11 +32,15 @@ void main()
         //from the value of 'j' we can tell whether the number (stored in 'i') is a prime or not
         if(j == i) {
             printf("%d\n", i);
+            count++;
         }
         i++;
         //'j' must be set 2 again
         j = 2;
     }
+
+    //final message
+    printf("These are %d prime numbers.", count);
 
 
     return 0;
