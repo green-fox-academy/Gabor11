@@ -18,6 +18,11 @@ int main() {
     //TODO:
     // Get the user's pet name with getch
 
+    //clear the buffer
+    for(int i = 0; i < 256; i++){
+        buffer[i] = '\0';
+    }
+
     printf("Insert your pet's name: ");
 
 
