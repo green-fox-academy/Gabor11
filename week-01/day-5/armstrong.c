@@ -30,14 +30,15 @@ main(){
     num = number;
 
     //generating sum of powers of digits
-    for (int i = 0 ; i < counter ; i++) {
-        digit = num % 10;
+    for (int i = counter ; i > 0 ; i--) {
+        digit = num / pow(10,(i - 1));
+        printf("digit: %d\n", digit);
         powsum += pow(digit, counter);
-        num = num / 10;
-
+        num -= digit * pow(10,(i - 1));
     }
 
     //checking whether the initial number equals 'powsum'
+
     if (powsum == number) {
         printf("The number %d is an Armstrong number.", number);
     } else {

@@ -39,6 +39,7 @@ int anagram(char* input1, char* input2)
     } else {
         size = strlen(input1);
     }
+    // these nested loops search for identical characters
     while (i < size) {
         j = 0;
         while (j < size) {
