@@ -40,6 +40,7 @@ int main()
         printf("%d\n", numbers[i]);
     }
 
+
     return 0;
 }
 
@@ -76,7 +77,7 @@ int* tokenize(char* string, char s[12])
     char* tempstr = calloc(strlen(string) + 1, sizeof(char));
     strcpy(tempstr, string);
     char* token;
-    static int values[30];
+    static int values[30] = {'\0'};
     int i = 0;
 
     // starting to process the string
@@ -99,6 +100,7 @@ int* tokenize(char* string, char s[12])
         i++;
         }
     }
+    values[i] = '\0';
     return values;
 }
 
