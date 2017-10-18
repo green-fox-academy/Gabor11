@@ -6,6 +6,8 @@ void start_message();
 int* tokenize(char* string, char s[12]);
 int int_pnt_len(int* array);
 void set_cursor_pos(int x, int y);
+void get_array(int* target_array, char* string, char* filter);
+void doing_math(int* ops, int* nums);
 
 COORD coord = {0,0};
 
@@ -15,20 +17,15 @@ int main()
     char string[256] = {'\0'};
     int operators[256] = {'\0'};
     int numbers[256] = {'\0'};
-    int* val;
     start_message();
 
     gets(string);
     // getting operators from 'string'
-    val = tokenize(string, "1234567890");
-    for (int i = 0; i < int_pnt_len(val); i++) {
-        operators[i] = val[i];
-    }
+    get_array(operators, string, "1234567890");
     // getting numbers from 'string'
-    val = tokenize(string, "+-/*");
-    for (int i = 0; i < int_pnt_len(val); i++) {
-        numbers[i] = val[i];
-    }
+    get_array(numbers, string, "+-/*");
+
+    doing_math(operators, numbers);
 
     for (int i = 0; i < int_pnt_len(operators); i++) {
         printf("%d\n", operators[i]);
@@ -111,6 +108,21 @@ int int_pnt_len(int* array)
         i++;
     }
     return i;
+}
+
+void get_array(int* target_array, char* string, char* filter)
+{
+    int* val;
+    val = tokenize(string, filter);
+    for (int i = 0; i < int_pnt_len(val); i++) {
+        target_array[i] = val[i];
+    }
+}
+
+void doing_math(int* ops, int* nums)
+{
+
+
 }
 
 void set_cursor_pos(int x, int y)
