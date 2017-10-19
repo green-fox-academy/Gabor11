@@ -21,33 +21,36 @@ int main()
 {
     char string[256] = {'\0'};
     int operators[256] = {'\0'};        // receiving output of tokenize
-    char *oprtrs[256] = {'\0'};         // to compare with user input
+    char oprtrs[256][6] = {'\0'};         // to compare with user input
     int numbers[256] = {'\0'};
     float result = 0;
     int j = 0;
     int k = 0;
-    char* buffer = malloc(sizeof(char) * 10);
-    // char buffer[10] = {'\0'};
+    // char* buffer = malloc(sizeof(char) * 10);
+
 
     operators[0] = 43;
-    operators[1] = 1;
+    operators[1] = 44;
     operators[2] = 45;
     operators[3] = 1;
 
-    oprtrs[0] = "valami";
-    oprtrs[1] = "valami";
-    oprtrs[2] = "valami";
+    strcpy(oprtrs[0], "valam");
+    strcpy(oprtrs[1], "valam");
+    strcpy(oprtrs[2], "valam");
 
     // filling up oprtrs
     for (int i = 0; i < int_pnt_len(operators); i++) {
+        char buffer[6] = {'\0'};
         while(operators[i] != 1) {
             buffer[k] = operators[i];
             k++;
             i++;
         }
         buffer[k] = '\0';
-        // oprtrs[j] = malloc(sizeof(char) * 11);
-        memmove(oprtrs[j], buffer, int_pnt_len(buffer));
+        // filling up 'oprtrs' with an operator from the buffer :)
+        for (int l = 0; l < 6; l++) {
+            oprtrs[j][l] = buffer[l];
+        }
         j++;
         k = 0;
     }
