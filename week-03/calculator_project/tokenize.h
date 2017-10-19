@@ -34,3 +34,19 @@ int* tokenize(char* string, char s[12])
     values[i] = '\0';
     return values;
 }
+
+char* remove_spaces(char* input)                                 /* deblank accepts a char[] argument and returns a char[] */
+{
+    int i, j;
+    i = j = 0;
+    char *output = input;
+    for (i, j ; i < strlen(input) ; i++, j++)          /* Evaluate each character in the input */
+    {
+        if (input[i]!=' ')                                       /* If the character is not a space */
+            output[j]=input[i];                                  /* Copy that character to the output char[] */
+        else
+            j--;                                                  /* If it is a space then do not increment the output index (j), the next non-space will be entered at the current index */
+    }
+    output[j] = '\0';
+    return output;                                                /* Return output char[]. Should have no spaces*/
+}
