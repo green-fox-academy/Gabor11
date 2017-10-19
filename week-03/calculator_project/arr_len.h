@@ -2,10 +2,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-int int_pnt_len(int* array)
+int double_arr_len(double* array)
 {
     int i = 0;
-    while (array[i] != NULL) {
+    while ((int)array[i] != NULL) {
         i++;
     }
     return i;

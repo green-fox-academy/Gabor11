@@ -3,18 +3,18 @@
 #include <windows.h>
 #include "tokenize.h"
 #include "start_message.h"
-#include "int_pnt_len.h"
+#include "arr_len.h"
 #include "get_array.h"
 #include "operators.h"
 
 void start_message(); // outsourced
-int* tokenize(char* string, char s[12]); // outsourced
+double* tokenize(char* string, char s[12]); // outsourced
 char* remove_spaces(char* input);
-int int_pnt_len(int* array);
+int double_arr_len(double* array);
 void set_cursor_pos(int x, int y);
-void get_array(int* target_array, char* string, char* filter);
-void int_to_char_2d_array(int* operators, char oprtrs[][6]);
-float do_math(int* ops, int o_end, int* nums, int n_end);
+void get_array(double* target_array, char* string, char* filter);
+void int_to_char_2d_array(double* operators, char oprtrs[][6]);
+double do_math(char oprtrs[][6], int o_end, double* nums, int n_end);
 
 
 COORD coord = {0,0};
@@ -22,11 +22,10 @@ COORD coord = {0,0};
 int main()
 {
     char string[256] = {'\0'};
-    int operators[256] = {'\0'};        // receiving output of tokenize
+    double operators[256] = {'\0'};        // receiving output of tokenize
     char oprtrs[256][6] = {'\0'};         // to compare with user input
-    int numbers[256] = {'\0'};
-    float result = 0;
-
+    double numbers[256] = {'\0'};
+    double result = 0;
     /*
     operators[0] = 43;
     operators[1] = 44;
@@ -56,7 +55,7 @@ int main()
     // getting numbers from 'string'
     get_array(numbers, string, "+-/*%^<logbintohextodectoexitclearhelp");
 
-   /* result = do_math(operators, int_pnt_len(operators) - 1, numbers, int_pnt_len(numbers) - 1);
+   /* result = do_math(operators, double_arr_len(operators) - 1, numbers, double_arr_len(numbers) - 1);
 
     printf("%f\n\n\n", result);
     /**/
@@ -66,8 +65,8 @@ int main()
 
     printf("\n");
 
-    for (int i = 0; i < int_pnt_len(numbers); i++) {
-        printf("%d\n", numbers[i]);
+    for (int i = 0; i < double_arr_len(numbers); i++) {
+        printf("%f\n", numbers[i]);
     }
 
 /**/
@@ -76,15 +75,15 @@ int main()
 
 
 // this function receives the end of the two arrays and it iterates through them recursively
-float do_math(int ops[][6], int o_end, int* nums, int n_end)
+double do_math(char oprtrs[][6], int o_end, double* nums, int n_end)
 {
     float result = 0;
-    if (ops[o_end - 1] != NULL)
+    if (oprtrs[o_end - 1] != NULL)
         result = do_math(ops, o_end - 1, nums, n_end - 1);
     else
         result = nums[n_end - 2];
     // choosing the operator
-    if (ops[0] == '+')
+    if (oprtrs[0] == '+')
             return result + nums[n_end - 1];
 
 
