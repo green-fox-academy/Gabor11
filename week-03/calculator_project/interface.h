@@ -60,17 +60,20 @@ Hit enter to start!\n\
 
 int input_count(char oprtrs[][6], char ops[][6])
 {
+
     int len = char2d_arr_len(oprtrs);
     int count = 0;
 
-    for (int i = 0 ; i < 11 ; i++) {
+    for (int i = 0 ; i < 8 ; i++) {
         for (int j = 0 ; j < len ; j++) {
             if (strcmp(oprtrs[j],ops[i]) == 0) {
                 count++;
             }
         }
     }
-    for (int i = 11 ; i < 14 ; i++) {
+
+
+    for (int i = 8 ; i < 14 ; i++) {
         for (int j = 0 ; j < len ; j++) {
             if (strcmp(oprtrs[j],ops[i]) == 0) {
                 return i;
@@ -79,7 +82,7 @@ int input_count(char oprtrs[][6], char ops[][6])
     }
     // if all operators are known it is good :)
     if (count == len)
-        return 1;
+        return 15;
     else
         return -1;
 

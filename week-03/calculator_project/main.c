@@ -29,7 +29,6 @@ int main()
 
     start_message();
     while (1) {
-
         gets(string);
         // set the cursor position to the end of the input line
         set_cursor_pos(strlen(string) + 1, get_cursor_y() - 1);
@@ -46,16 +45,11 @@ int main()
         case -1:
             print_error("Wrong input. Please try again.\n");
             break;
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-            if (char2d_arr_len(oprtrs) +1 != double_arr_len(numbers)) {
-                strcat(error_out, "Wrong use of operators.");
+        case 8:
+        case 9:
+        case 10:
+            if (char2d_arr_len(oprtrs) != 1) {
+                strcpy(error_out, "Wrong use of unary operator.");
                 goto on_error;
             }
             goto on_default;
@@ -69,6 +63,10 @@ int main()
             start_message();
             break;
         default:
+            if (char2d_arr_len(oprtrs) +1 != double_arr_len(numbers)) {
+                strcpy(error_out, "Wrong use of operators.");
+                goto on_error;
+            }
             on_default:
             result = do_math(oprtrs, char2d_arr_len(oprtrs) - 1, numbers, double_arr_len(numbers) - 1, ops, string_out, error_out);
             if(result != DBL_MAX)
@@ -84,7 +82,7 @@ int main()
 
         clear_database(string, operators, oprtrs, numbers, result, string_out, error_out);
 
-    }
+        }
 
     return 0;
 }

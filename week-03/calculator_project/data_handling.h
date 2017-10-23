@@ -180,25 +180,51 @@ int is_num(char* str)
 // this function deals with emptying the variables which are used
 void clear_database(char string [], int operators[], char oprtrs[][6], double numbers[], double result, char string_out[], char error_out[])
 {
+    char empty[6] = {'\0'};
+    int size = sizeof(string[0]);
+    int len = strlen(string);
+
+    memset(string, '\0', sizeof(string[0])*strlen(string));
+    /*
     for (int i = 0; i < strlen(string); i++) {
         string[i] = '\0';
     }
+    */
+    len = int_arr_len(operators);
 
-    for (int i = 0; i < int_arr_len(operators); i++) {
-        operators[i] = '\0';
+    for (int i = 0; i < len; i++) {
+        operators[i] = 0;
     }
 
-    for (int i = 0; i < char2d_arr_len(oprtrs); i++) {
-        strcpy(oprtrs[i], "");
+
+    // memset(operators, 0, sizeof(operators[0])*len);
+
+    len = char2d_arr_len(oprtrs);
+
+    for (int i = 0; i < len; i++) {
+        strcpy (oprtrs[i],empty);
+       /*     for ( int j = 0; j < 6; j++) {
+
+            } */
     }
 
-    for (int i = 0; i < double_arr_len(numbers); i++) {
+    len = double_arr_len(numbers);
+
+    for (int i = 0; i < len; i++) {
         numbers[i] = 0;
     }
 
-    strcat(string_out, "");
+    len = strlen(string_out);
 
-    strcat(error_out, "");
+    for (int i = 0; i < len; i++) {
+        string_out[i] = '\0';
+    }
+
+    len = strlen(error_out);
+
+    for (int i = 0; i < len; i++) {
+        error_out[i] = '\0';
+    }
 
     result = 0;
 
