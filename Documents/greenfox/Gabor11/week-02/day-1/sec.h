@@ -1,2 +1,0 @@
-#define MYBANKACC "71100923432211987"
-#define MYPASS "blablabla44"

@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <windows.h>
+//#include <windows.h>
 
 
 void print_num_result(double val)
