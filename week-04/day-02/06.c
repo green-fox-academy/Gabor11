@@ -41,7 +41,7 @@ double avg_gold(struct Pirate* pir_array, int num_of_pirates)
 char *richest_wooden_leg(struct Pirate* pirates, int num_of_pirates)
 {
     struct Pirate *r_w_l = malloc(sizeof(pirates[0]));
-    r_w_l = &pirates[0];
+    (*r_w_l) = pirates[0];
     for (int i = 1; i < num_of_pirates; i++) {
         if (!(*r_w_l).has_wooden_leg) {
             *r_w_l = pirates[i];
