@@ -33,8 +33,14 @@ point_t make_point(int X, int Y)
 {
     point_t p;
 
-    p.x = X;
-    p.y = Y;
+    //p.x = X;
+    //p.y = Y;
+    printf("X: \n");
+    scanf("%d", &p.x);
+
+    printf("Y: \n");
+    scanf("%d", &p.y);
+
 
     return p;
 }
