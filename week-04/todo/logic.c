@@ -17,12 +17,12 @@ void defining_commands()
 	strcpy(commands[8], "-lp");
 }
 
-int process(task task_list[], char *input,int *next_ID, char *errortext)
+int process(task *task_list, char *input,int *next_ID, char *errortext)
 {
     int switcher = -1;
 
     char command[MAX_COMMAND_LENGTH];
-    char operand[strlen(input) - MAX_COMMAND_LENGTH];
+    char operand[256];
 
     strcpy(command, get_command(input, errortext));
 
@@ -37,7 +37,10 @@ int process(task task_list[], char *input,int *next_ID, char *errortext)
 
     switch (switcher) {
     case 0:
-        add_task(task_list, next_ID, operand, errortext);
+        if (add_task(task_list, next_ID, operand, errortext) != 0)
+            puts(errortext);
+        else
+            puts("new task added\n");
         break;
     case 1:
         printf("%c", 'a' + switcher);
@@ -46,13 +49,16 @@ int process(task task_list[], char *input,int *next_ID, char *errortext)
         printf("%c", 'a' + switcher);
         break;
     case 3:
-        printf("%c", 'a' + switcher);
+        if(list(task_list, next_ID, errortext) != 0)
+            puts(errortext);
         break;
     case 4:
-        printf("%c", 'a' + switcher);
+        if(empty_list(task_list, next_ID, errortext) != 0)
+            puts(errortext);
         break;
     case 5:
-        printf("%c", 'a' + switcher);
+        if(remove_task(task_list, next_ID, operand, errortext) != 0)
+            puts(errortext);
         break;
     case 6:
         printf("%c", 'a' + switcher);
@@ -64,21 +70,11 @@ int process(task task_list[], char *input,int *next_ID, char *errortext)
         printf("%c", 'a' + switcher);
         break;
     default:
-        printf("%s\n", errortext);
+        printf("default\n");
 
         break;
     }
 
-}
-
-void substring(char s[], char *sub, int p, int l) {
-   int c = 0;
-
-   while (c < l) {
-      sub[c] = s[p+c];
-      c++;
-   }
-   sub[c] = '\0';
 }
 
 char* get_command(char *input, char *errortext)
@@ -91,4 +87,19 @@ char* get_command(char *input, char *errortext)
         strcpy(tempstr, "err");
     }
     return tempstr;
+}
+
+int list(task *task_list, int *next_ID, char *errortext)
+{
+    if (*next_ID > 0) {
+        printf("List by number\n");
+        printf("====================\n");
+        printf("Num | Progress | Text  | Prio\n");
+        for (int i = 0; i < *next_ID; i++) {
+            printf("%d.\t[%d\%]\t%s\t-%d\n", task_list[i].ID, task_list[i].progress, task_list[i].name, 1);
+        }
+        return 0;
+    }
+    strcpy(errortext, "no tasks to list\n");
+    return 1;
 }
