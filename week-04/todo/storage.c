@@ -65,3 +65,36 @@ int remove_task(task *task_list, int* next_ID, char* operand, char* errortext)
     (*next_ID)--;
     return 0;
 }
+
+int write_to_file(task *task_list, int *next_ID, char *errortext, char *filename)
+{
+    if (*next_ID > 0) {
+        FILE *f;
+        f = fopen(filename, "w");
+        fprintf(f, "ID;Progress;Text;Priority\n");
+        for (int i = 0; i < *next_ID; i++) {
+            fprintf(f, "%d; %d; %s; %d\n", task_list[i].ID, task_list[i].progress, task_list[i].name, task_list[i].prior);
+        }
+        fclose(f);
+    } else {
+        strcpy(errortext, "no tasks to put in a file\n");
+        return 1;
+    }
+    return 0;
+}
+
+int read_from_file(task *task_list, int *next_ID, char *errortext, char *filename)
+{
+    if (*next_ID > 0) {
+        strcpy(errortext, "the local database has some tasks already\nif you do not want to store them please empty the list\nwith the command \"-e\"");
+        return 1;
+    } else {
+        FILE *f;
+        f = fopen(filename, "r");
+        for (int i = 0; i < *next_ID; i++) {
+            fscanf("%d[^;]%d[^;] %s[^;] %d[^;]", task_list[i].ID, task_list[i].progress, task_list[i].name, task_list[i].prior);
+        }
+        fclose(f);
+    }
+    return 0;
+}

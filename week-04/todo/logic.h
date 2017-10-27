@@ -9,7 +9,7 @@ char commands[NUM_OF_COMMANDS][MAX_COMMAND_LENGTH];
 
 void defining_commands();
 
-int process(task *task_list, char *input, int *next_ID, char *errortext);
+int process(task *task_list, char *input, int *next_ID, char *errortext, char *filename);
 
 int list(task *task_list, int *next_ID, char *errortext);
 

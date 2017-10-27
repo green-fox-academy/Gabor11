@@ -17,7 +17,7 @@ void defining_commands()
 	strcpy(commands[8], "-lp");
 }
 
-int process(task *task_list, char *input,int *next_ID, char *errortext)
+int process(task *task_list, char *input,int *next_ID, char *errortext, char *filename)
 {
     int switcher = -1;
 
@@ -43,10 +43,16 @@ int process(task *task_list, char *input,int *next_ID, char *errortext)
             puts("new task added\n");
         break;
     case 1:
-        //
+        if (write_to_file(task_list, next_ID, errortext, filename) != 0)
+            puts(errortext);
+        else
+            puts("tasks have been written to \"tasks.csv\"");
         break;
     case 2:
-        //
+        if (read_from_file(task_list, next_ID, errortext, filename) != 0)
+            puts(errortext);
+        else
+            puts("tasks have been written to \"tasks.csv\"");
         break;
     case 3:
         if(list(task_list, next_ID, errortext) != 0)
@@ -164,4 +170,6 @@ prior_task(task *task_list, int *next_ID, char *operand, char *errortext)
 
     return 0;
 }
+
+
 

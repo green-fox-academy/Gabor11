@@ -10,13 +10,14 @@ int main()
     task task_list[10] = {'\0'};
     int next_ID = 0;
     char c = 0;
+    char *filename = "todo.csv";
     defining_commands();
 
     start_screen();
-    while (c != 27) {
+    while (1) {
         gets(input);
 
-        process(task_list, input, &next_ID, errortext);
+        process(task_list, input, &next_ID, errortext, filename);
     }
 
     printf("Take care! Good bye!\n");
