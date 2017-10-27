@@ -7,6 +7,7 @@ typedef struct{
     int ID;
     int progress;
     char name[256];
+    int prior;
 } task;
 
 int add_task(task *task_list, int* next_ID, char* taskname, char* errortext);

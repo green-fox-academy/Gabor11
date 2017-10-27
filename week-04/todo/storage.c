@@ -15,6 +15,7 @@ int add_task(task *task_list, int* next_ID, char* taskname, char* errortext)
     task new_task;
     new_task.ID = *next_ID;
     new_task.progress = 0;
+    new_task.prior = 0;
     if (strlen(taskname) == 0) {
         strcpy(errortext, "unable to add - no title is provided\n");
         return 2;

@@ -13,6 +13,10 @@ int process(task *task_list, char *input, int *next_ID, char *errortext);
 
 int list(task *task_list, int *next_ID, char *errortext);
 
+int progress_task(task *task_list, int *next_ID, char *operand, char *errortext);
+
+int prior_task(task *task_list, int *next_ID, char *operand, char *errortext);
+
 char* get_command(char *input, char *errortext);
 
 #endif /* LOGIC_H__*/
