@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <limits.h>
 
 /*
  * Create a function that takes an array of integers as an argument (a pointer) and it's length as an unsigned integer.
@@ -8,6 +7,9 @@
  *
  * Print it out before and after to be able to check whether it works as supposed.
  */
+
+void sorter(int *array, int8_t length);
+
 int main()
 {
     int arr[] = {12, 11, 9, 23, 10, 8, 4, 50, 43, 32};
@@ -27,7 +29,7 @@ int main()
     return 0;
 }
 
-void sorter(int *array, int length)
+void sorter(int *array, int8_t length)
 {
     int aux = 0;
     for (int i = 0; i < length; ++i) {
