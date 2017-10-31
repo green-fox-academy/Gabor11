@@ -24,6 +24,7 @@
 */
 
 int move_checker(char chessboard[8][8], int x, int y, int xx, int yy);
+int move_figure(char chessboard[8][8], int x, int y, int xx, int yy);
 int set_up_board(char chessboard[8][8]);
 void print_board(char chessboard[8][8]);
 int get_coord(char *text, char input[5], int *x, int *y);
@@ -42,10 +43,10 @@ int main()
     char input2[5];
     saveDefaultColor();
 
+    set_up_board(chessboard);
     while(1) {
         c = 0;
         set_cursor_pos(0, 0);
-        set_up_board(chessboard);
         print_board(chessboard);
         if (get_coord("from>", input1, &x, &y) != 0) {
             puts("please use correct coordinates\n");
@@ -65,10 +66,15 @@ int main()
             clear();
             continue;
         }
-        if (move_checker(chessboard, x, y, xx, yy) == 0)
+        if (move_checker(chessboard, x, y, xx, yy) == 0) {
+            move_figure(chessboard, x, y, xx, yy);
             printf("valid step\n");
-        else
+        } else {
             printf("invalid step\n");
+            while (c != 13) {
+            c = getch();
+            }
+        }
         resetColor();
         clear();
 
@@ -112,6 +118,7 @@ int set_up_board(char chessboard[8][8])
 int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
 {
     int i = 0;
+    int j = 0;
     char switcher = chessboard[x][y];
 
     switch (switcher) {
@@ -129,57 +136,216 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
         // checking whether vertically backwards there are something in the way
         // or if an opponent figure stands on the target field (> 96 means lower case character --> opponent)
         if (x - xx < 0 && y - yy == 0) {
-            for (i = x; i < xx; i++) {
+            for (i = x + 1; i < xx; i++) {
                 if (chessboard[i][y] != ' ')
                     break;
             }
-            if (i == xx - 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
                 return 0;
             else
                 return -1;
         }
         // checking whether vertically upwards there are something in the way
         if (x - xx > 0 && y - yy == 0) {
-            for (i = x; i > xx; i--) {
+            for (i = x - 1; i > xx; i--) {
                 if (chessboard[i][y] != ' ')
                     break;
             }
-            if (i == xx + 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
                 return 0;
             else
                 return -1;
         }
         // checking whether horizontally leftwards there are something in the way
         if (x - xx == 0 && y - yy > 0) {
-            for (i = y; i > yy; i--) {
+            for (i = y - 1; i > yy; i--) {
                 if (chessboard[x][i] != ' ')
                     break;
             }
-            if (i == yy + 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+            if (i == yy && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
                 return 0;
             else
                 return -1;
         }
         // checking whether horizontally rightwards there are something in the way
         if (x - xx == 0 && y - yy < 0) {
-            for (i = y; i < yy; i++) {
+            for (i = y + 1; i < yy; i++) {
                 if (chessboard[x][i] != ' ')
                     break;
             }
-            if (i == yy - 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+            if (i == yy && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
                 return 0;
             else
                 return -1;
         }
         break;
     case 'H':
+        if ((abs(x - xx) == 1 && abs(y - yy) == 2 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' ')) || (abs(x - xx) == 2 && abs(y - yy) == 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' ')))
+            return 0;
+        else
+            return -1;
         break;
     case 'B':
+        // BISHOP: it must be checked whether there is some figure in the way or not
+        // hitting an opponent at the very end is permitted
+        // left - up
+        if (x - xx == y - yy && x - xx > 0) {
+            for (i = x - 1, j = y - 1; i > xx; i--, j--) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // right - down
+        if (x - xx == y - yy && x - xx < 0) {
+            for (i = x + 1, j = y + 1; i < xx; i++, j++) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // right - up
+        if (x - xx == yy - y && y - yy < 0) {
+            for (i = x - 1, j = y + 1; i > xx; i--, j++) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // left - down
+        if (xx - x == y - yy && x - xx < 0) {
+            for (i = x + 1, j = y - 1; i < xx; i++, j--) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
         break;
     case 'Q':
+        // ROOK-like behavior:
+        // checking whether vertically backwards there are something in the way
+        // or if an opponent figure stands on the target field (> 96 means lower case character --> opponent)
+        if (x - xx < 0 && y - yy == 0) {
+            for (i = x + 1; i < xx; i++) {
+                if (chessboard[i][y] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether vertically upwards there are something in the way
+        if (x - xx > 0 && y - yy == 0) {
+            for (i = x - 1; i > xx; i--) {
+                if (chessboard[i][y] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether horizontally leftwards there are something in the way
+        if (x - xx == 0 && y - yy > 0) {
+            for (i = y - 1; i > yy; i--) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether horizontally rightwards there are something in the way
+        if (x - xx == 0 && y - yy < 0) {
+            for (i = y + 1; i < yy; i++) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // BISHOP-like behavior:
+        // it must be checked whether there is some figure in the way or not
+        // hitting an opponent at the very end is permitted
+        // left - up
+        if (x - xx == y - yy && x - xx > 0) {
+            for (i = x - 1, j = y - 1; i > xx; i--, j--) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // right - down
+        if (x - xx == y - yy && x - xx < 0) {
+            for (i = x + 1, j = y + 1; i < xx; i++, j++) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // right - up
+        if (x - xx == yy - y && y - yy < 0) {
+            for (i = x - 1, j = y + 1; i > xx; i--, j++) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // left - down
+        if (xx - x == y - yy && x - xx < 0) {
+            for (i = x + 1, j = y - 1; i < xx; i++, j--) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
         break;
     case 'K':
+        if (abs(x - xx) == 1 && (abs(y - yy) == 1 || y - yy == 0) && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' ')) //while moving one step vertically or aside
+            return 0;
+        else if (x - xx == 0 && abs(y - yy) == 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' ')) // while moving one step to the left or to the right
+            return 0;
+        // castling
+        else if (x == 7 && y == 4 && xx == 7 && yy == 6) {
+            for (i = y + 1; i < yy; i++) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy && chessboard[xx][yy] == ' ' && chessboard[7][7] == 'R')
+                return 0;
+        } else {
+            return -1;
+        }
         break;
+
     case 'p':
         if (x - xx == -1 && y - yy == 0 && chessboard[xx][yy] == ' ') //while moving one step forward normally
             return 0;
@@ -194,56 +360,205 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
         // checking whether vertically backwards there are something in the way
         // or if an opponent figure stands on the target field (< 96  && > 64 means upper case character --> opponent)
         if (x - xx < 0 && y - yy == 0) {
-            for (i = x; i < xx; i++) {
+            for (i = x + 1; i < xx; i++) {
                 if (chessboard[i][y] != ' ')
                     break;
             }
-            if (i == xx - 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
                 return 0;
             else
                 return -1;
         }
         // checking whether vertically upwards there are something in the way
         if (x - xx > 0 && y - yy == 0) {
-            for (i = x; i > xx; i--) {
+            for (i = x - 1; i > xx; i--) {
                 if (chessboard[i][y] != ' ')
                     break;
             }
-            if (i == xx + 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
                 return 0;
             else
                 return -1;
         }
         // checking whether horizontally leftwards there are something in the way
         if (x - xx == 0 && y - yy > 0) {
-            for (i = y; i > yy; i--) {
+            for (i = y - 1; i > yy; i--) {
                 if (chessboard[x][i] != ' ')
                     break;
             }
-            if (i == yy + 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+            if (i == yy && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
                 return 0;
             else
                 return -1;
         }
         // checking whether horizontally rightwards there are something in the way
         if (x - xx == 0 && y - yy < 0) {
-            for (i = y; i < yy; i++) {
+            for (i = y + 1; i < yy; i++) {
                 if (chessboard[x][i] != ' ')
                     break;
             }
-            if (i == yy - 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+            if (i == yy && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
                 return 0;
             else
                 return -1;
         }
         break;
     case 'h':
+        if ((abs(x - xx) == 1 && abs(y - yy) == 2 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' ')) || (abs(x - xx) == 2 && abs(y - yy) == 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' ')))
+            return 0;
+        else
+            return -1;
         break;
     case 'b':
+        // BISHOP: it must be checked whether there is some figure in the way or not
+        // hitting an opponent at the very end is permitted
+        // left - up
+        if (x - xx == y - yy && x - xx > 0) {
+            for (i = x - 1, j = y - 1; i > xx; i--, j--) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // right - down
+        if (x - xx == y - yy && x - xx < 0) {
+            for (i = x + 1, j = y + 1; i < xx; i++, j++) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // right - up
+        if (x - xx == yy - y && y - yy < 0) {
+            for (i = x - 1, j = y + 1; i > xx; i--, j++) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // left - down
+        if (xx - x == y - yy && x - xx < 0) {
+            for (i = x + 1, j = y - 1; i < xx; i++, j--) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
         break;
     case 'q':
+        // ROOK-like behavior:
+        // checking whether vertically backwards there are something in the way
+        // or if an opponent figure stands on the target field (< 96  && > 64 means upper case character --> opponent)
+        if (x - xx < 0 && y - yy == 0) {
+            for (i = x + 1; i < xx; i++) {
+                if (chessboard[i][y] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether vertically upwards there are something in the way
+        if (x - xx > 0 && y - yy == 0) {
+            for (i = x - 1; i > xx; i--) {
+                if (chessboard[i][y] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether horizontally leftwards there are something in the way
+        if (x - xx == 0 && y - yy > 0) {
+            for (i = y - 1; i > yy; i--) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether horizontally rightwards there are something in the way
+        if (x - xx == 0 && y - yy < 0) {
+            for (i = y + 1; i < yy; i++) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // BISHOP-like behavior:
+        // it must be checked whether there is some figure in the way or not
+        // hitting an opponent at the very end is permitted
+        // left - up
+        if (x - xx == y - yy && x - xx > 0) {
+            for (i = x - 1, j = y - 1; i > xx; i--, j--) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // right - down
+        if (x - xx == y - yy && x - xx < 0) {
+            for (i = x + 1, j = y + 1; i < xx; i++, j++) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // right - up
+        if (x - xx == yy - y && y - yy < 0) {
+            for (i = x - 1, j = y + 1; i > xx; i--, j++) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // left - down
+        if (xx - x == y - yy && x - xx < 0) {
+            for (i = x + 1, j = y - 1; i < xx; i++, j--) {
+                if (chessboard[i][j] != ' ')
+                    break;
+            }
+            if (i == xx && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
         break;
     case 'k':
+        if (abs(x - xx) == 1 && (abs(y - yy) == 1 || y - yy == 0) && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' ')) //while moving one step vertically or aside
+            return 0;
+        else if (x - xx == 0 && abs(y - yy) == 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' ')) // while moving one step to the left or to the right
+            return 0;
+        else
+            return -1;
         break;
     default:
         break;
@@ -252,12 +567,18 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
 
 }
 
+int move_figure(char chessboard[8][8], int x, int y, int xx, int yy)
+{
+    chessboard[xx][yy] = chessboard[x][y];
+    chessboard[x][y] = ' ';
+}
+
 void print_board(char chessboard[8][8])
     {
         // upper line with dots
         setBackgroundColor(WHITE);
         setColor(BLACK);
-        printf(" ");
+        printf("   ");
         for (int i = 0; i < 8; i++) {
             if (i % 2 == 0) {
                 setBackgroundColor(BLACK);
@@ -266,7 +587,7 @@ void print_board(char chessboard[8][8])
                 setBackgroundColor(WHITE);
                 setColor(BLACK);
             }
-            printf(". .");
+            printf(" %d ", i);
         }
         printf("\n");
         //printing the actual content of the array, painting the fields respectively..
@@ -278,7 +599,7 @@ void print_board(char chessboard[8][8])
                 setBackgroundColor(WHITE);
                 setColor(BLACK);
             }
-            printf(":");
+            printf(" %d ", i);
             for (int j = 0; j < 8; j++) {
                 if ((i + j) % 2 == 0) {
                     setBackgroundColor(WHITE);
