@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "rlutil.h"
+
+// including "rlutil.h" is needed!!!
 
 /*
  * Create a representation of a chess board in the form of a two dimensional character array.
@@ -23,13 +26,53 @@
 int move_checker(char chessboard[8][8], int x, int y, int xx, int yy);
 int set_up_board(char chessboard[8][8]);
 void print_board(char chessboard[8][8]);
+int get_coord(char *text, char input[5], int *x, int *y);
+void set_cursor_pos(int x, int y);
+int get_cursor_y();
+void clear();
+
+COORD coord = {0,0};
 
 int main()
 {
     char chessboard[8][8] = {'\0'};
-    set_up_board(chessboard);
-    print_board(chessboard);
+    int x, y, xx, yy;
+    char c = 0;
+    char input1[5];
+    char input2[5];
+    saveDefaultColor();
 
+    while(1) {
+        c = 0;
+        set_cursor_pos(0, 0);
+        set_up_board(chessboard);
+        print_board(chessboard);
+        if (get_coord("from>", input1, &x, &y) != 0) {
+            puts("please use correct coordinates\n");
+            resetColor();
+            while (c != 13) {
+            c = getch();
+            }
+            clear();
+            continue;
+        }
+        if (get_coord("  to>", input2, &xx, &yy) != 0) {
+            puts("please use correct coordinates\n");
+            resetColor();
+            while (c != 13) {
+            c = getch();
+            }
+            clear();
+            continue;
+        }
+        if (move_checker(chessboard, x, y, xx, yy) == 0)
+            printf("valid step\n");
+        else
+            printf("invalid step\n");
+        resetColor();
+        clear();
+
+    }
 
 }
 
@@ -68,6 +111,7 @@ int set_up_board(char chessboard[8][8])
 
 int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
 {
+    int i = 0;
     char switcher = chessboard[x][y];
 
     switch (switcher) {
@@ -82,13 +126,51 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
             return -1;
         break;
     case 'R':
-        int i = 0;
+        // checking whether vertically backwards there are something in the way
+        // or if an opponent figure stands on the target field (> 96 means lower case character --> opponent)
         if (x - xx < 0 && y - yy == 0) {
             for (i = x; i < xx; i++) {
-
+                if (chessboard[i][y] != ' ')
+                    break;
             }
+            if (i == xx - 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
         }
-
+        // checking whether vertically upwards there are something in the way
+        if (x - xx > 0 && y - yy == 0) {
+            for (i = x; i > xx; i--) {
+                if (chessboard[i][y] != ' ')
+                    break;
+            }
+            if (i == xx + 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether horizontally leftwards there are something in the way
+        if (x - xx == 0 && y - yy > 0) {
+            for (i = y; i > yy; i--) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy + 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether horizontally rightwards there are something in the way
+        if (x - xx == 0 && y - yy < 0) {
+            for (i = y; i < yy; i++) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy - 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
         break;
     case 'H':
         break;
@@ -109,6 +191,51 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
             return -1;
         break;
     case 'r':
+        // checking whether vertically backwards there are something in the way
+        // or if an opponent figure stands on the target field (< 96  && > 64 means upper case character --> opponent)
+        if (x - xx < 0 && y - yy == 0) {
+            for (i = x; i < xx; i++) {
+                if (chessboard[i][y] != ' ')
+                    break;
+            }
+            if (i == xx - 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether vertically upwards there are something in the way
+        if (x - xx > 0 && y - yy == 0) {
+            for (i = x; i > xx; i--) {
+                if (chessboard[i][y] != ' ')
+                    break;
+            }
+            if (i == xx + 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether horizontally leftwards there are something in the way
+        if (x - xx == 0 && y - yy > 0) {
+            for (i = y; i > yy; i--) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy + 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
+        // checking whether horizontally rightwards there are something in the way
+        if (x - xx == 0 && y - yy < 0) {
+            for (i = y; i < yy; i++) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy - 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' '))
+                return 0;
+            else
+                return -1;
+        }
         break;
     case 'h':
         break;
@@ -126,13 +253,110 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
 }
 
 void print_board(char chessboard[8][8])
-{
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            printf("%c ", chessboard[i][j]);
+    {
+        // upper line with dots
+        setBackgroundColor(WHITE);
+        setColor(BLACK);
+        printf(" ");
+        for (int i = 0; i < 8; i++) {
+            if (i % 2 == 0) {
+                setBackgroundColor(BLACK);
+                setColor(WHITE);
+            } else {
+                setBackgroundColor(WHITE);
+                setColor(BLACK);
+            }
+            printf(". .");
         }
         printf("\n");
+        //printing the actual content of the array, painting the fields respectively..
+        for (int i = 0; i < 8; i++) {
+            if (i % 2 == 0) {
+                setBackgroundColor(BLACK);
+                setColor(WHITE);
+            } else {
+                setBackgroundColor(WHITE);
+                setColor(BLACK);
+            }
+            printf(":");
+            for (int j = 0; j < 8; j++) {
+                if ((i + j) % 2 == 0) {
+                    setBackgroundColor(WHITE);
+                    setColor(BLACK);
+                    printf(" %c ", chessboard[i][j]);
+                    resetColor();
+                } else {
+                    setBackgroundColor(BLACK);
+                    setColor(WHITE);
+                    printf(" %c ", chessboard[i][j]);
+                    resetColor();
+                }
+            }
+            printf("\n");
+        }
     }
-}
+
+void set_cursor_pos(int x, int y)
+    {
+        coord.X = x;
+        coord.Y = y;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+    }
+
+int get_cursor_y()
+    {
+        CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+        return csbi.dwCursorPosition.Y;
+    }
+
+void clear()
+    {
+        system("cls");
+    }
+
+int get_coord(char *text, char input[5], int *x, int *y)
+    {
+        char *token;
+        char *ptr;
+        puts(text);
+        set_cursor_pos(strlen(text) + 1, get_cursor_y() - 1);
+        gets(input);
+        token = strtok(input, " ");
+        if (token != NULL && is_num(token)) {
+            *x = strtol(token, &ptr, 10);
+            if (*x > 7)
+                return -1;
+            token = strtok(NULL, " ");
+        } else {
+            return -1;
+        }
+        if (token != NULL && is_num(token)) {
+            *y = strtol(token, &ptr, 10);
+            if (*y > 7)
+                return -1;
+        } else {
+            return -1;
+        }
+        return 0;
+    }
+
+// gives back '1' if the input can be a number and '0' if it cannot
+int is_num(char* str)
+    {
+        int ret = 0;
+        int count = 0;
+        for (int i = 0; i < strlen(str); i++) {
+            if (47 < str[i] && str[i] < 58)
+                count++;
+        }
+
+        if (count == strlen(str))
+            return 1;
+        else
+            return 0;
+    }
 
 
