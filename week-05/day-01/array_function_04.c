@@ -333,13 +333,21 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
             return 0;
         else if (x - xx == 0 && abs(y - yy) == 1 && (chessboard[xx][yy] > 96 || chessboard[xx][yy] == ' ')) // while moving one step to the left or to the right
             return 0;
-        // castling
+        // castling to right
         else if (x == 7 && y == 4 && xx == 7 && yy == 6) {
             for (i = y + 1; i < yy; i++) {
                 if (chessboard[x][i] != ' ')
                     break;
             }
             if (i == yy && chessboard[xx][yy] == ' ' && chessboard[7][7] == 'R')
+                return 0;
+        // castling to left
+        } else if(x == 7 && y == 4 && xx == 7 && yy == 1) {
+            for (i = y - 1; i > yy; i--) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy && chessboard[xx][yy] == ' ' && chessboard[7][0] == 'R')
                 return 0;
         } else {
             return -1;
@@ -557,6 +565,23 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
             return 0;
         else if (x - xx == 0 && abs(y - yy) == 1 && ((chessboard[xx][yy] < 96 && chessboard[xx][yy] > 64) || chessboard[xx][yy] == ' ')) // while moving one step to the left or to the right
             return 0;
+        // castling to right
+        else if (x == 0 && y == 4 && xx == 0 && yy == 6) {
+            for (i = y + 1; i < yy; i++) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy && chessboard[xx][yy] == ' ' && chessboard[0][7] == 'r')
+                return 0;
+        // castling to left
+        } else if(x == 0 && y == 4 && xx == 0 && yy == 1) {
+            for (i = y - 1; i > yy; i--) {
+                if (chessboard[x][i] != ' ')
+                    break;
+            }
+            if (i == yy && chessboard[xx][yy] == ' ' && chessboard[0][0] == 'r')
+                return 0;
+        }
         else
             return -1;
         break;
@@ -569,8 +594,35 @@ int move_checker(char chessboard[8][8], int x, int y, int xx, int yy)
 
 int move_figure(char chessboard[8][8], int x, int y, int xx, int yy)
 {
+    if (chessboard[x][y] == 'k' && x == 0 && y == 4) {
+        if (xx == 0 && yy == 1 && chessboard[0][0] == 'r') {// castling to left
+            chessboard[xx][yy] = 'k';
+            chessboard[x][y] = ' ';
+            chessboard[0][2] = 'r';
+            chessboard[0][0] = ' ';
+        } else if (xx == 0 && yy == 6 && chessboard[0][7] == 'r') {// castling to right
+            chessboard[xx][yy] = 'k';
+            chessboard[x][y] = ' ';
+            chessboard[0][5] = 'r';
+            chessboard[0][7] = ' ';
+        }
+    } else if (chessboard[x][y] == 'K' && x == 7 && y == 4) {
+        if (xx == 7 && yy == 1 && chessboard[7][0] == 'R') {// castling to left
+            chessboard[xx][yy] = 'K';
+            chessboard[x][y] = ' ';
+            chessboard[7][2] = 'R';
+            chessboard[7][0] = ' ';
+        } else if (xx == 7 && yy == 6 && chessboard[7][7] == 'R') {// castling to right
+            chessboard[xx][yy] = 'K';
+            chessboard[x][y] = ' ';
+            chessboard[7][5] = 'R';
+            chessboard[7][7] = ' ';
+        }
+
+    } else {
     chessboard[xx][yy] = chessboard[x][y];
     chessboard[x][y] = ' ';
+    }
 }
 
 void print_board(char chessboard[8][8])
