@@ -19,5 +19,9 @@ int main() {
 
     cout << "I am " << *name << ", I am " << *age << " years old and I can eat " << *slice_of_pizza_you_can_eat << " slices of pizza" << endl;
 
+    delete name;
+    delete age;
+    delete slice_of_pizza_you_can_eat;
+
     return 0;
 }
