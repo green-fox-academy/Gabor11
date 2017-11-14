@@ -1,13 +1,8 @@
 #include <iostream>
 #include <string>
+#include "01.h"
 
 using namespace std;
-
-class Student {
-  public:
-    string name;
-    unsigned int age;
-};
 
 int main() {
   // Create a new instance of the Student class and set it's name to "John" and
