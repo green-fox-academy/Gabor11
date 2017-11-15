@@ -56,13 +56,12 @@ string printer_child(ChildClass *child, int switcher)
 
 int main()
 {
-    ParentClass *ptr = new ChildClass();
 
-    printer_parent(ptr, 1);
-    printer_parent(ptr, 2);
-
-    printer_child((ChildClass*)ptr, 1);
-    printer_child((ChildClass*)ptr, 2);
+    ParentClass* a = new ChildClass();
+    cout << a->function1() << endl;
+    cout << a->function2() << endl;
+    cout << ((ChildClass*)a)->function1() << endl;
+    cout << ((ChildClass*)a)->function2() << endl;
 
     return 0;
 }
