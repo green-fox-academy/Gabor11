@@ -1,0 +1,31 @@
+# depslib dependency file v1.0
+1510836170 source:c:\users\whistleblower\desktop\myapp\todo_oop\src\task.cpp
+	"Task.h"
+
+1510836761 c:\users\whistleblower\desktop\myapp\todo_oop\include\task.h
+	<string>
+
+1510864827 source:c:\users\whistleblower\desktop\myapp\todo_oop\main.cpp
+	<iostream>
+	"Task.h"
+	"Control.h"
+	<string>
+	<vector>
+
+1510850095 c:\users\whistleblower\desktop\myapp\todo_oop\include\handler.h
+	<vector>
+	<string>
+	"Task.h"
+
+1510850039 source:c:\users\whistleblower\desktop\myapp\todo_oop\src\handler.cpp
+	<iostream>
+	<sstream>
+	<string>
+	<vector>
+	"Handler.h"
+
+1510864827 c:\users\whistleblower\desktop\myapp\todo_oop\include\control.h
+	<vector>
+	<string>
+	"Task.h"
+
