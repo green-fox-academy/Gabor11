@@ -34,10 +34,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="include/Handler.h" />
+		<Unit filename="include/Control.h" />
+		<Unit filename="include/Datahandle.h" />
 		<Unit filename="include/Task.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="src/Handler.cpp" />
+		<Unit filename="src/Control.cpp" />
+		<Unit filename="src/Datahandle.cpp" />
 		<Unit filename="src/Task.cpp" />
 		<Extensions>
 			<code_completion />

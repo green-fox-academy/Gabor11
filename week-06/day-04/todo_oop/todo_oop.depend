@@ -29,3 +29,38 @@
 	<string>
 	"Task.h"
 
+1510874222 source:/home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/src/Task.cpp
+	"Task.h"
+
+1510874222 /home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/include/Task.h
+	<string>
+
+1510897561 source:/home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/main.cpp
+	<iostream>
+	"Task.h"
+	"Control.h"
+	<string>
+	<vector>
+
+1510897418 /home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/include/Control.h
+	<vector>
+	<string>
+	"Task.h"
+	"Datahandle.h"
+
+1510894990 /home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/include/Datahandle.h
+	<vector>
+	<iostream>
+	"Task.h"
+
+1510897953 source:/home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/src/Control.cpp
+	<iostream>
+	<sstream>
+	<string>
+	<vector>
+	"Control.h"
+
+1510897891 source:/home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/src/Datahandle.cpp
+	"Datahandle.h"
+	<vector>
+

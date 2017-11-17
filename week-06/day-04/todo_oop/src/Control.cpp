@@ -20,10 +20,18 @@ Control::Control()
     commands.push_back("-p");
     commands.push_back("-lp");
 
-
+    count = 0; // setting initial value of actual number of tasks
 
     //ctor
 }
+
+string Control::get_input()
+{
+    string input;
+    getline(cin, input);
+    return input;
+}
+
 
 int Control::proc(string input)
 {
@@ -44,63 +52,40 @@ int Control::proc(string input)
         }
     }
 
-    if (switcher == 0) {
-       // Task *tsk = new Task(1, operand);
-       Task tsk = Task(1, operand);
-        task_list.push_back(tsk);
-        cout << "new task added" << endl;
-        return 0;
-    }
-
-    return 1;
-   /* switch (switcher) {
+switch (switcher) {
     case 0:
-        if (add_task(task_list, next_ID, operand, errortext) != 0)
-            puts(errortext);
-        else
-            puts("new task added\n");
+        handler.add_to_list(count++, operand);
         break;
     case 1:
-        if (write_to_file(task_list, next_ID, errortext, filename) != 0)
-            puts(errortext);
-        else
-            puts("tasks have been written to \"tasks.csv\"");
+        // write to file
         break;
     case 2:
-        if (read_from_file(task_list, next_ID, errortext, filename) != 0)
-            puts(errortext);
-        else
-            puts("tasks have been written to \"tasks.csv\"");
+        // read from file
         break;
     case 3:
-        if(list(task_list, next_ID, errortext) != 0)
-            puts(errortext);
+        // print list to screen
+        handler.print_list();
         break;
     case 4:
-        if(empty_list(task_list, next_ID, errortext) != 0)
-            puts(errortext);
+        // empty list
         break;
     case 5:
-        if(remove_task(task_list, next_ID, operand, errortext) != 0)
-            puts(errortext);
+        // remove task from list
         break;
     case 6:
-        if(progress_task(task_list, next_ID, operand, errortext) != 0)
-            puts(errortext);
+        // edit progress of a task
         break;
     case 7:
-        if(prior_task(task_list, next_ID, operand, errortext) != 0)
-            puts(errortext);
+        // edit priority of a task
         break;
     case 8:
-        //
+        // print list ordered by priority
         break;
     default:
-        printf("default\n");
+        cout << "default\n" << endl;
 
         break;
     }
-    */
 }
 
 void Control::tokenize(string input)
