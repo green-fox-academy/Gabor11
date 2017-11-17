@@ -19,22 +19,23 @@ Control::Control()
     commands.push_back("-c");
     commands.push_back("-p");
     commands.push_back("-lp");
+    commands.push_back("-exit");
 
     count = 0; // setting initial value of actual number of tasks
 
     //ctor
+
+    _exit = false;
 }
 
-string Control::get_input()
+
+
+int Control::read_proc()
 {
+
     string input;
     getline(cin, input);
-    return input;
-}
 
-
-int Control::proc(string input)
-{
     int switcher = -1;
     int i;
     string command;
@@ -42,7 +43,7 @@ int Control::proc(string input)
 
     tokenize(input);
     command = tokens[0];
-    input.erase(0, 3);
+    input.erase(0, tokens[0].size());
     operand = input;
 
     for (i = 0; i < commands.size(); i++) {
@@ -58,9 +59,11 @@ switch (switcher) {
         break;
     case 1:
         // write to file
+        handler.write_to_file();
         break;
     case 2:
         // read from file
+        handler.read_from_file();
         break;
     case 3:
         // print list to screen
@@ -68,45 +71,48 @@ switch (switcher) {
         break;
     case 4:
         // empty list
+        handler.empty_list();
         break;
     case 5:
         // remove task from list
+        //handler.remove_task();
         break;
     case 6:
         // edit progress of a task
+        //handler.set_progress();
         break;
     case 7:
         // edit priority of a task
+        //handler.add_priority();
         break;
     case 8:
         // print list ordered by priority
         break;
+    case 9:
+        _exit = true;// print list ordered by priority
+        break;
     default:
-        cout << "default\n" << endl;
+        cout << "wrong input" << endl;
 
         break;
     }
+    tokens.clear();
 }
 
 void Control::tokenize(string input)
 {
-/*
-    string tempstr;
-    tempstr = input;
-    tempstr = strtok(tempstr, " ");
-    if (strlen(tempstr) >= MAX_COMMAND_LENGTH) {
-        errortext = "invalid length of operator";
-        tempstr = "err";
-    }
-    return tempstr;
-*/
     string str = input;
-    string buf; // Have a buffer string
     stringstream ss(str); // Insert the string into a stream
-
-    while (ss >> buf)
+    ss >> buf;
+    do {
         tokens.push_back(buf);
+    }while (ss >> buf);
 
+}
+
+bool Control::exit()
+{
+    return _exit;
 }
 
 Control::~Control()

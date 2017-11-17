@@ -10,13 +10,15 @@ class Control
     public:
         Control();
         virtual ~Control();
-        string get_input();
-        int proc(string input);
+        int read_proc();
+        bool exit();
 
     protected:
 
     private:
         int count; // counts the added tasks
+        string buf; // outer buffer for processing inputs (in void tokenize(string input))
+        bool _exit;
         void tokenize(string input);
         vector <string> tokens;
         vector <string> commands;
