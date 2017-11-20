@@ -10,7 +10,7 @@ int main () {
         int index = 200;
         int int_array[5] = {1, 2, 3, 4, 5};
 
-        if (index <= sizeof(int_array)/sizeof(int_array[0]))
+        if (index >= sizeof(int_array)/sizeof(int) || index < 0)
             throw runtime_error("array index out of range");
         cout << int_array[index];
     }
