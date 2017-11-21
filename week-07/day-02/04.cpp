@@ -35,6 +35,14 @@ public:
         a += first.a;
         a += second.a;
     }
+
+
+    void add(Integer& first, Integer& second, Integer& third)
+    {
+        a += first.a;
+        a += second.a;
+        a += third.a;
+    }
 };
 
 int main() {
@@ -46,6 +54,7 @@ int main() {
 
     someinteger.add(someotherinteger);
     adifferentint.add(anotherone, someinteger);
+    adifferentint.add(anotherone, someinteger, someotherinteger);
 
     cout << adifferentint.get() << endl;
 
