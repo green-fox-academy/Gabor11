@@ -12,12 +12,13 @@ SerialPortWrapper::SerialPortWrapper(string portName, int baudRate): _portName(p
         throw "ERROR: could not enumerate the ports on the computer. Check your hardware configuration!";
     }
 /* THESE LINES ARE COMMENTED OUT BECAUSE OF TEST REASONS
- * THE FINAL VERSION MUST HAVE THEM BACK
+ * THE FINAL VERSION MUST HAVE THEM BACK*/
     _portIdx = comFindPort(portName.c_str());
     if (_portIdx < 0) {
         throw "ERROR: No serial port was found with this name!";
     }
- */
+    _open = false;
+
 };
 
 vector<string> SerialPortWrapper::listAvailablePorts() {
@@ -36,6 +37,7 @@ void SerialPortWrapper::openPort() {
     if (!comOpen(_portIdx, _baudRate)) {
         throw "ERROR: could not open port with name " + _portName;
     }
+    _open = true;
 };
 
 void SerialPortWrapper::readLineFromPort(string *line) {
@@ -47,6 +49,11 @@ void SerialPortWrapper::readLineFromPort(string *line) {
 
 	// If there is no data on the port, exit
 	if (bytes <= 0) {
+       /* nodelay(stdsrc, true);
+        ch = getch();
+        if (ch = 'c')
+            closePort();
+        nodelay(stdsrc, false); */
 		return;
 	}
 
@@ -63,4 +70,11 @@ void SerialPortWrapper::readLineFromPort(string *line) {
 
 void SerialPortWrapper::closePort() {
     comClose(_portIdx);
+    _open = false;
 };
+
+bool SerialPortWrapper::open() {
+    return _open;
+}
+
+

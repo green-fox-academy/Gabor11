@@ -2,7 +2,6 @@
 #include <vector>
 
 
-
 Datahandle::Datahandle()
 {
     filename = "ATM_log.txt";

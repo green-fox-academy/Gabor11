@@ -1,9 +1,11 @@
 #include "Methods.h"
 #include <cstdio>
+#include <sstream>
+#include <iomanip>
 
 Methods::Methods()
 {
-    //serial = new SerialPortWrapper("COM3", 115200);
+    serial = new SerialPortWrapper("COM3", 115200);
     //ctor
 }
 
@@ -12,63 +14,88 @@ Methods::~Methods()
     //dtor
 }
 
-void Methods::command_screen()
-{
-    clear();
-    cout << "Temperature Logger Application" << endl;
-    cout << "==============================" << endl;
-    cout << "Commands:" << endl;
-    cout << "h\tShow command list" << endl;
-    cout << "o\tOpen port" << endl;
-    cout << "s\tStart logging / Stop logging" << endl;
-    cout << "c\tClose port" << endl;
-    cout << "l\tList after error handling" << endl;
-    cout << "e\tExit from the program" << endl;
-    pause();
-    clear();
-}
+temp_rec Methods::string_to_temp_rec(string line) {
 
-void Methods::clear()
-{
-    system("cls");
-}
+	int temperature;
+	istringstream exampleStream(line);
+	tm parsedDateTime;
+	exampleStream >> get_time(&parsedDateTime, "%Y.%m.%d %H:%M:%S")
+			>> temperature;
+	if (exampleStream.fail()) {
+		throw "Invalid string format!";
+	}
 
-void Methods::pause()
-{
-    system("pause");
+
+	if (-273 > temperature || 1000 < temperature) {
+		throw "Temperature is out of range!";
+	}
+
+	long timestamp = mktime(&parsedDateTime);
+
+	temp_rec rec;
+	rec.temperature = temperature;
+	rec.timestamp = timestamp;
+	return rec;
 }
+;
+
 void Methods::open_port()
 {
-    //serial->openPort();
-    cout << "opening port" << endl;
+    if (!serial->open()) {
+        serial->openPort();
+        cout << "opening port" << endl;
+    } else {
+        cout << "already open" << endl;
+    }
 }
 
 void Methods::start_stop_log()
 {
-    cout << "start or stop log" << endl;
+    if (serial->open()) {
+        cout << "start or stop log" << endl;
+    } else {
+        cout << "communication is not open" << endl;
+    }
 }
 
 void Methods::close_port()
 {
-    //serial->closePort();
-    cout << "closing port" << endl;
+    if (serial->open()) {
+        serial->closePort();
+        cout << "closing port" << endl;
+    } else {
+        cout << "already closed" << endl;
+    }
 }
 
 void Methods::list_after_errorhandling()
-{       /*
-        string line;
-        while(1){
-            serial->readLineFromPort(&line);
-            if (line.length() > 0){
-                cout << line << endl;
-            }
+{
+    cout << "list after errorhandling" << endl;
+    int temp_vect_length = temperatures.size();
+    string line;
+    while(serial->open()){
+        serial->readLineFromPort(&line);
+        try {
+            temperatures.push_back(string_to_temp_rec(line));
         }
-        */
-        cout << "list after errorhandling" << endl;
+        catch (...) {
+            // ignore failed readings
+        }
+        if (temperatures.size() != temp_vect_length) {
+            /*temp_rec member = temperatures[temp_vect_length];
+            long tstamp = member.timestamp;
+            int temp = member.tempe */
+            cout << temperatures[temp_vect_length].timestamp << " " << temperatures[temp_vect_length].temperature << endl;
+        }
+
+    }
+    cout << "communication closed" << endl;
+
 }
 
 bool Methods::filter_incoming_line(string line)
 {
+
     if (line.length() > 0) {
         tokenize(line);
     } else {

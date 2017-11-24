@@ -13,6 +13,9 @@ class Control
         virtual ~Control();
         int proc();
         bool exit();
+        void pause();
+        void command_screen(); // shows the commands
+        void clear(); // erases all content from the screen
 
     protected:
 

@@ -8,19 +8,24 @@
 
 using namespace std;
 
+struct temp_rec{
+    long timestamp;
+    int temperature;
+};
+
 class Methods
 {
     public:
         Methods();
         virtual ~Methods();
-        void command_screen(); // shows the commands
-        void clear(); // erases all content from the screen
+
         void open_port();
         void start_stop_log();
         void close_port();
         void list_after_errorhandling();
         bool filter_incoming_line(string line);
-        void pause();
+
+
 
     protected:
 
@@ -28,6 +33,8 @@ class Methods
         SerialPortWrapper *serial;
         vector <string> tokens;
         void tokenize(string input);
+        temp_rec string_to_temp_rec(string line);
+        vector <temp_rec> temperatures;
 
 };
 

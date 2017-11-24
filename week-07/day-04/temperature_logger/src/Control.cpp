@@ -1,4 +1,5 @@
 #include "Control.h"
+#include <conio.h>
 
 Control::Control()
 {
@@ -14,11 +15,11 @@ Control::~Control()
 int Control::proc()
 {
     char switcher = 0;
-    switcher = getchar();
+    switcher = getch();
 
     switch (switcher) {
         case 'h':
-            meths.command_screen();
+            command_screen();
             break;
         case 'o':
             meths.open_port();
@@ -41,6 +42,32 @@ int Control::proc()
         return 0;
     }
 
+}
+
+void Control::command_screen()
+{
+    clear();
+    cout << "Temperature Logger Application" << endl;
+    cout << "==============================" << endl;
+    cout << "Commands:" << endl;
+    cout << "h\tShow command list" << endl;
+    cout << "o\tOpen port" << endl;
+    cout << "s\tStart logging / Stop logging" << endl;
+    cout << "c\tClose port" << endl;
+    cout << "l\tList after error handling" << endl;
+    cout << "e\tExit from the program" << endl;
+    pause();
+    clear();
+}
+
+void Control::clear()
+{
+    system("cls");
+}
+
+void Control::pause()
+{
+    system("pause");
 }
 
 bool Control::exit()

@@ -15,11 +15,13 @@ class SerialPortWrapper {
         void openPort();
         void readLineFromPort(string *line);
         void closePort();
+        bool open();
 
     private:
         string _portName;
         int _baudRate;
         int _portIdx;
+        bool _open;
 };
 
 #endif // SERIALPORTWRAPPER_H_
