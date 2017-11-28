@@ -63,42 +63,189 @@ static void CPU_CACHE_Enable(void);
   * @param  None
   * @retval None
   */
+
+void initialize()
+{
+	  /* This project template calls firstly two functions in order to configure MPU feature
+	     and to enable the CPU Cache, respectively MPU_Config() and CPU_CACHE_Enable().
+	     These functions are provided as template implementation that User may integrate
+	     in his application, to enhance the performance in case of use of AXI interface
+	     with several masters. */
+
+	  /* Configure the MPU attributes as Write Through */
+	  MPU_Config();
+
+	  /* Enable the CPU Cache */
+	  CPU_CACHE_Enable();
+
+	  /* STM32F7xx HAL library initialization:
+	       - Configure the Flash ART accelerator on ITCM interface
+	       - Configure the Systick to generate an interrupt each 1 msec
+	       - Set NVIC Group Priority to 4
+	       - Low Level Initialization
+	     */
+	  HAL_Init();
+
+	  /* Configure the System clock to have a frequency of 216 MHz */
+	  SystemClock_Config();
+
+
+	  /* Add your application code here     */
+	  //BSP_LED_Init(LED_GREEN);
+	  //BSP_LED_On(LED_GREEN);
+
+	  __HAL_RCC_GPIOA_CLK_ENABLE();    // we need to enable the GPIOA port's clock first
+	  __HAL_RCC_GPIOF_CLK_ENABLE();
+
+	  GPIO_InitTypeDef p0;
+	 /* GPIO_InitTypeDef p1;
+	  GPIO_InitTypeDef p2;
+	  GPIO_InitTypeDef p3;
+	  GPIO_InitTypeDef p4; */
+
+	  p0.Pin = GPIO_PIN_0;            // this is about PIN 0
+	  p0.Mode = GPIO_MODE_OUTPUT_PP;  // Configure as output with push-up-down enabled
+	  p0.Pull = GPIO_PULLDOWN;        // the push-up-down should work as pulldown
+	  p0.Speed = GPIO_SPEED_HIGH;     // we need a high-speed output
+
+	  HAL_GPIO_Init(GPIOA, &p0);      // initialize the pin on GPIOA port with HAL
+
+	  GPIO_InitTypeDef p1 = p0;
+	  p1.Pin = GPIO_PIN_10;            // this is about PIN 1
+
+	  HAL_GPIO_Init(GPIOF, &p1);
+
+	  GPIO_InitTypeDef p2 = p0;
+	  p2.Pin = GPIO_PIN_9;            // this is about PIN 2
+
+	  HAL_GPIO_Init(GPIOF, &p2);
+
+	  GPIO_InitTypeDef p3 = p0;
+	  p3.Pin = GPIO_PIN_8;            // this is about PIN 3
+
+	  HAL_GPIO_Init(GPIOF, &p3);
+
+	  GPIO_InitTypeDef p4 = p0;
+	  p4.Pin = GPIO_PIN_7;            // this is about PIN 4
+
+	  HAL_GPIO_Init(GPIOF, &p4);
+
+}
+
+void light_up(uint8_t pin) {
+	switch (pin) {
+	case 0:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 1:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 2:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 3:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 4:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	}
+}
+
+
+void turn_off(uint8_t pin)
+{
+	switch (pin) {
+	case 0:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 1:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 2:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 3:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 4:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	}
+}
 int main(void)
 {
+	 initialize();
   /* This project template calls firstly two functions in order to configure MPU feature 
      and to enable the CPU Cache, respectively MPU_Config() and CPU_CACHE_Enable().
      These functions are provided as template implementation that User may integrate 
      in his application, to enhance the performance in case of use of AXI interface 
      with several masters. */ 
   
-  /* Configure the MPU attributes as Write Through */
-  MPU_Config();
-
-  /* Enable the CPU Cache */
-  CPU_CACHE_Enable();
-
-  /* STM32F7xx HAL library initialization:
-       - Configure the Flash ART accelerator on ITCM interface
-       - Configure the Systick to generate an interrupt each 1 msec
-       - Set NVIC Group Priority to 4
-       - Low Level Initialization
-     */
-  HAL_Init();
-
-  /* Configure the System clock to have a frequency of 216 MHz */
-  SystemClock_Config();
-
-  //TODO:
+   //TODO:
   //Initialization the push button and the led with using BSP
   
   //Turn the led on to validate the initialization is occured.
   
-  /* Add your application code here     */
+  // Add your application code here
+	  GPIO_InitTypeDef button;
+	  button.Pin = GPIO_PIN_6;            // this is about PIN 0
+	  button.Mode = GPIO_MODE_INPUT;  	// Configure as output with push-up-down enabled
+	  button.Pull = GPIO_PULLUP;        // the push-up-down should work as pulldown
+	  button.Speed = GPIO_SPEED_HIGH;     // we need a high-speed output
+
+	  HAL_GPIO_Init(GPIOF, &button);
+
   /* Infinite loop */
   while (1)
   {
+
 	  //TODO:
 	  //Write a simple program witch flashes(toggle) the led when the button is pressed
+
+	 if (HAL_GPIO_ReadPin(GPIOF, GPIO_PIN_6)) {
+			light_up(0);
+			HAL_Delay(200);
+			turn_off(0);
+
+			light_up(1);
+			HAL_Delay(200);
+			turn_off(1);
+
+			light_up(2);
+			HAL_Delay(200);
+			turn_off(2);
+
+			light_up(3);
+			HAL_Delay(200);
+			turn_off(3);
+
+			light_up(4);
+			HAL_Delay(200);
+			turn_off(4);
+
+	 } else {
+		    light_up(4);
+		  	HAL_Delay(200);
+		  	turn_off(4);
+
+		  	light_up(3);
+		  	HAL_Delay(200);
+		  	turn_off(3);
+
+			light_up(2);
+			HAL_Delay(200);
+			turn_off(2);
+
+			light_up(1);
+			HAL_Delay(200);
+			turn_off(1);
+
+			light_up(0);
+			HAL_Delay(200);
+			turn_off(0);
+	 }
+
   }
 }
 
