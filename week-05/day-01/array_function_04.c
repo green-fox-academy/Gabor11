@@ -605,6 +605,8 @@ int move_figure(char chessboard[8][8], int x, int y, int xx, int yy)
             chessboard[x][y] = ' ';
             chessboard[0][5] = 'r';
             chessboard[0][7] = ' ';
+        } else {
+            goto erika;
         }
     } else if (chessboard[x][y] == 'K' && x == 7 && y == 4) {
         if (xx == 7 && yy == 1 && chessboard[7][0] == 'R') {// castling to left
@@ -617,9 +619,12 @@ int move_figure(char chessboard[8][8], int x, int y, int xx, int yy)
             chessboard[x][y] = ' ';
             chessboard[7][5] = 'R';
             chessboard[7][7] = ' ';
+        } else {
+            goto erika;
         }
 
     } else {
+    erika:
     chessboard[xx][yy] = chessboard[x][y];
     chessboard[x][y] = ' ';
     }
