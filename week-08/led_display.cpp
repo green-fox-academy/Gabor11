@@ -1,10 +1,10 @@
  /**
   ******************************************************************************
-  * @file    Templates/Src/main.c 
+* @file    Templates/Src/main.c
   * @author  MCD Application Team
   * @version V1.0.3
-  * @date    22-April-2016 
-  * @brief   STM32F7xx HAL API Template project 
+  * @date    22-April-2016
+  * @brief   STM32F7xx HAL API Template project
   ******************************************************************************
   * @attention
   *
@@ -44,7 +44,7 @@
 
 /** @addtogroup Templates
   * @{
-  */ 
+  */
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -96,6 +96,9 @@ void initialize()
 
 	  __HAL_RCC_GPIOA_CLK_ENABLE();    // we need to enable the GPIOA port's clock first
 	  __HAL_RCC_GPIOF_CLK_ENABLE();
+	  __HAL_RCC_GPIOB_CLK_ENABLE();
+	  __HAL_RCC_GPIOI_CLK_ENABLE();
+	  __HAL_RCC_GPIOH_CLK_ENABLE();
 
 	  GPIO_InitTypeDef p0;
 	 /* GPIO_InitTypeDef p1;
@@ -130,31 +133,60 @@ void initialize()
 
 	  HAL_GPIO_Init(GPIOF, &p4);
 
+	  GPIO_InitTypeDef p5 = p0;
+	  p5.Pin = GPIO_PIN_6;            // this is about PIN 5
+
+	  HAL_GPIO_Init(GPIOF, &p5);
+
+	  GPIO_InitTypeDef p6 = p0;
+	  p6.Pin = GPIO_PIN_8;            // this is about PIN 6 (D15 on board)
+
+	  HAL_GPIO_Init(GPIOB, &p6);
+
+	  GPIO_InitTypeDef p7 = p0;
+	  p7.Pin = GPIO_PIN_9;            // this is about PIN 7 (D14 on board)
+
+	  HAL_GPIO_Init(GPIOB, &p7);
+
+	  GPIO_InitTypeDef p8 = p0;
+	  p8.Pin = GPIO_PIN_1;            // this is about PIN 8 (D13 on board)
+
+	  HAL_GPIO_Init(GPIOI, &p8);
+
+	  GPIO_InitTypeDef p9 = p0;
+	  p9.Pin = GPIO_PIN_6;            // this is about PIN 9 (D7 on board)
+
+	  HAL_GPIO_Init(GPIOH, &p9);
+
+	  GPIO_InitTypeDef p10 = p0;
+	  p10.Pin = GPIO_PIN_15;            // this is about PIN 10 (D11 on board)
+
+	  HAL_GPIO_Init(GPIOB, &p10);
+
+	  GPIO_InitTypeDef p11 = p0;
+	  p11.Pin = GPIO_PIN_8;            // this is about PIN 11 (D10 on board)
+
+	  HAL_GPIO_Init(GPIOA, &p11);
+
+	  GPIO_InitTypeDef p12 = p0;
+	  p12.Pin = GPIO_PIN_15;            // this is about PIN 12 (D9 on board)
+
+	  HAL_GPIO_Init(GPIOA, &p12);
+
+	  GPIO_InitTypeDef p13 = p0;
+	  p13.Pin = GPIO_PIN_2;            // this is about PIN 13 (D8 on board)
+
+	  HAL_GPIO_Init(GPIOI, &p13);
+
+	  GPIO_InitTypeDef p14 = p0;
+	  p14.Pin = GPIO_PIN_3;            // this is about PIN 14 (D7 on board)
+
+	  HAL_GPIO_Init(GPIOI, &p14);
+
+
 }
 
 void light_up(uint8_t pin) {
-	switch (pin) {
-	case 0:
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 1:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 2:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 3:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 4:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	}
-}
-
-
-void turn_off(uint8_t pin)
-{
 	switch (pin) {
 	case 0:
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);   // setting the pin to 1
@@ -171,54 +203,194 @@ void turn_off(uint8_t pin)
 	case 4:
 		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
+	case 5:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 6:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 7:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 8:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_1, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 9:
+		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 10:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 11:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 12:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 13:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_2, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 14:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_3, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 15:
+		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
 	}
 }
-int main(void)
+
+
+void turn_off(uint8_t pin)
 {
-	 initialize();
-  /* This project template calls firstly two functions in order to configure MPU feature 
-     and to enable the CPU Cache, respectively MPU_Config() and CPU_CACHE_Enable().
-     These functions are provided as template implementation that User may integrate 
-     in his application, to enhance the performance in case of use of AXI interface 
-     with several masters. */ 
-  
-   //TODO:
-  //Initialization the push button and the led with using BSP
-  
-  //Turn the led on to validate the initialization is occured.
-  
-  // Add your application code here
-	  GPIO_InitTypeDef button;
-	  button.Pin = GPIO_PIN_6;            // this is about PIN 0
-	  button.Mode = GPIO_MODE_INPUT;  	// Configure as output with push-up-down enabled
-	  button.Pull = GPIO_PULLUP;        // the push-up-down should work as pulldown
-	  button.Speed = GPIO_SPEED_HIGH;     // we need a high-speed output
+	switch (pin) {
+	case 0:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 1:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 2:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 3:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 4:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 5:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 6:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 7:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 8:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_1, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 9:
+		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 10:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 11:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 12:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 13:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_2, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 14:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_3, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 15:
+		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	}
+}
 
-	  HAL_GPIO_Init(GPIOF, &button);
+int main()
+{
 
-  /* Infinite loop */
+	initialize();
+
+	while (1) {
+		light_up(0);
+		HAL_Delay(200);
+		turn_off(0);
+
+		light_up(1);
+		HAL_Delay(200);
+		turn_off(1);
+
+		light_up(2);
+		HAL_Delay(200);
+		turn_off(2);
+
+		light_up(3);
+		HAL_Delay(200);
+		turn_off(3);
+
+		light_up(4);
+		HAL_Delay(200);
+		turn_off(4);
+
+		light_up(5);
+		HAL_Delay(200);
+		turn_off(5);
+
+		light_up(6);
+		HAL_Delay(200);
+		turn_off(6);
+
+		light_up(7);
+		HAL_Delay(200);
+		turn_off(7);
+
+		light_up(8);
+		HAL_Delay(200);
+		turn_off(8);
+
+		light_up(9);
+		HAL_Delay(200);
+		turn_off(9);
+
+		light_up(10);
+		HAL_Delay(200);
+		turn_off(10);
+
+		light_up(11);
+		HAL_Delay(200);
+		turn_off(11);
+
+		light_up(12);
+		HAL_Delay(200);
+		turn_off(12);
+
+		light_up(13);
+		HAL_Delay(200);
+		turn_off(13);
+
+		light_up(14);
+		HAL_Delay(200);
+		turn_off(14);
+
+
+
+	}
+
+
+
+
+
+
+
+ /*
+  HAL_Delay(1000);                                      // wait a second
+  HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_RESET); // setting the pin to 0
+
+
+  /* Infinite loop
   while (1)
   {
-
 	  //TODO:
-	  //Write a simple program witch flashes(toggle) the led when the button is pressed
-	  light_up(0);
-	  turn_off(0);
-	  light_up(1);
-	  turn_off(1);
-	  light_up(2);
-	  turn_off(2);
-	  light_up(3);
-	  turn_off(3);
-	  light_up(4);
-	  turn_off(4);
+	  //Flash the ledwith 200 ms period time
+
+	  //HAL_Delay(100);
+	  //BSP_LED_Toggle(LED_GREEN);
 
   }
+	*/
 }
 
 /**
   * @brief  System Clock Configuration
-  *         The system Clock is configured as follow : 
+  *         The system Clock is configured as follow :
   *            System Clock source            = PLL (HSE)
   *            SYSCLK(Hz)                     = 216000000
   *            HCLK(Hz)                       = 216000000
@@ -248,7 +420,7 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 25;
-  RCC_OscInitStruct.PLL.PLLN = 432;  
+  RCC_OscInitStruct.PLL.PLLN = 432;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 9;
   if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -261,14 +433,14 @@ static void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  
-  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
+
+  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
      clocks dividers */
   RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
   if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7) != HAL_OK)
   {
     Error_Handler();
@@ -298,7 +470,7 @@ static void Error_Handler(void)
 static void MPU_Config(void)
 {
   MPU_Region_InitTypeDef MPU_InitStruct;
-  
+
   /* Disable the MPU */
   HAL_MPU_Disable();
 
@@ -345,7 +517,7 @@ static void CPU_CACHE_Enable(void)
   * @retval None
   */
 void assert_failed(uint8_t* file, uint32_t line)
-{ 
+{
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 
@@ -358,10 +530,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

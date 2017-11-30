@@ -136,7 +136,9 @@ int main(void)
 
   // initialize stuff to measure time
   uint32_t tickstart = 0;
-  while (BSP_PB_GetState(BUTTON_KEY) == 0)
+  
+  // waiting time -- button asked for multiple times in order to avoid annoying clicking by user
+  while (BSP_PB_GetState(BUTTON_KEY) == 0) 
   {
 	  BSP_LED_On(LED_GREEN);
 	  HAL_Delay(100);
@@ -171,7 +173,9 @@ int main(void)
 	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
 		  break;
   }
+  
   BSP_LED_Off(LED_GREEN);
+  
   while (1)
   {
 	  random = HAL_RNG_GetRandomNumber(&rndCfg) % 10000;
