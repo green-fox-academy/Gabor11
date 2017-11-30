@@ -99,6 +99,8 @@ void initialize()
 	  __HAL_RCC_GPIOB_CLK_ENABLE();
 	  __HAL_RCC_GPIOI_CLK_ENABLE();
 	  __HAL_RCC_GPIOH_CLK_ENABLE();
+	  __HAL_RCC_GPIOC_CLK_ENABLE();
+	  __HAL_RCC_GPIOG_CLK_ENABLE();
 
 	  GPIO_InitTypeDef p0;
 	 /* GPIO_InitTypeDef p1;
@@ -139,47 +141,47 @@ void initialize()
 	  HAL_GPIO_Init(GPIOF, &p5);
 
 	  GPIO_InitTypeDef p6 = p0;
-	  p6.Pin = GPIO_PIN_8;            // this is about PIN 6 (D15 on board)
+	  p6.Pin = GPIO_PIN_7;            // this is about PIN 6 (D0 on board, PC7 on STM)
 
-	  HAL_GPIO_Init(GPIOB, &p6);
+	  HAL_GPIO_Init(GPIOC, &p6);
 
 	  GPIO_InitTypeDef p7 = p0;
-	  p7.Pin = GPIO_PIN_9;            // this is about PIN 7 (D14 on board)
+	  p7.Pin = GPIO_PIN_6;            // this is about PIN 7 (D1 on board, PC6 on STM)
 
-	  HAL_GPIO_Init(GPIOB, &p7);
+	  HAL_GPIO_Init(GPIOC, &p7);
 
 	  GPIO_InitTypeDef p8 = p0;
-	  p8.Pin = GPIO_PIN_1;            // this is about PIN 8 (D13 on board)
+	  p8.Pin = GPIO_PIN_6;            // this is about PIN 8 (D2 on board, PG6 on STM)
 
-	  HAL_GPIO_Init(GPIOI, &p8);
+	  HAL_GPIO_Init(GPIOG, &p8);
 
 	  GPIO_InitTypeDef p9 = p0;
-	  p9.Pin = GPIO_PIN_6;            // this is about PIN 9 (D7 on board)
+	  p9.Pin = GPIO_PIN_4;            // this is about PIN 9 (D3 on board, PB4 on STM)
 
-	  HAL_GPIO_Init(GPIOH, &p9);
+	  HAL_GPIO_Init(GPIOB, &p9);
 
 	  GPIO_InitTypeDef p10 = p0;
-	  p10.Pin = GPIO_PIN_15;            // this is about PIN 10 (D11 on board)
+	  p10.Pin = GPIO_PIN_7;            // this is about PIN 10 (D4 on board, PG7 on STM)
 
-	  HAL_GPIO_Init(GPIOB, &p10);
+	  HAL_GPIO_Init(GPIOG, &p10);
 
 	  GPIO_InitTypeDef p11 = p0;
-	  p11.Pin = GPIO_PIN_8;            // this is about PIN 11 (D10 on board)
+	  p11.Pin = GPIO_PIN_0;            // this is about PIN 11 (D5 on board, PI0 on STM)
 
-	  HAL_GPIO_Init(GPIOA, &p11);
+	  HAL_GPIO_Init(GPIOI, &p11);
 
 	  GPIO_InitTypeDef p12 = p0;
-	  p12.Pin = GPIO_PIN_15;            // this is about PIN 12 (D9 on board)
+	  p12.Pin = GPIO_PIN_6;            // this is about PIN 12 (D6 on board, PH6 on STM)
 
-	  HAL_GPIO_Init(GPIOA, &p12);
+	  HAL_GPIO_Init(GPIOH, &p12);
 
 	  GPIO_InitTypeDef p13 = p0;
-	  p13.Pin = GPIO_PIN_2;            // this is about PIN 13 (D8 on board)
+	  p13.Pin = GPIO_PIN_3;            // this is about PIN 13 (D7 on board, PI3 on STM)
 
 	  HAL_GPIO_Init(GPIOI, &p13);
 
 	  GPIO_InitTypeDef p14 = p0;
-	  p14.Pin = GPIO_PIN_3;            // this is about PIN 14 (D7 on board)
+	  p14.Pin = GPIO_PIN_2;            // this is about PIN 14 (D8 on board, PI2 on STM)
 
 	  HAL_GPIO_Init(GPIOI, &p14);
 
@@ -207,34 +209,31 @@ void light_up(uint8_t pin) {
 		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 6:
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 7:
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 8:
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_1, GPIO_PIN_RESET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 9:
-		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 10:
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_7, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 11:
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_0, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 12:
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 13:
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_2, GPIO_PIN_RESET);   // setting the pin to 1
-		break;
-	case 14:
 		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_3, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
-	case 15:
-		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_RESET);   // setting the pin to 1
+	case 14:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_2, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	}
 }
@@ -262,34 +261,31 @@ void turn_off(uint8_t pin)
 		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	case 6:
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	case 7:
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	case 8:
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_1, GPIO_PIN_SET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	case 9:
-		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	case 10:
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	case 11:
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	case 12:
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);   // setting the pin to 1
+		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	case 13:
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_2, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 14:
 		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_3, GPIO_PIN_SET);   // setting the pin to 1
 		break;
-	case 15:
-		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+	case 14:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_2, GPIO_PIN_SET);   // setting the pin to 1
 		break;
 	}
 }
