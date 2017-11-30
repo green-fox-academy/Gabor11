@@ -118,6 +118,7 @@ int main(void)
   /* Output a message using printf function */
   printf("\n------------------WELCOME------------------\r\n");
   printf("**********in STATIC reaction game**********\r\n\n");
+  printf("\nLet's play the game! Are you ready?\n(press the button)\n");
 
   // initialize randomness
   RNG_HandleTypeDef rndCfg;
@@ -135,11 +136,47 @@ int main(void)
 
   // initialize stuff to measure time
   uint32_t tickstart = 0;
-
+  while (BSP_PB_GetState(BUTTON_KEY) == 0)
+  {
+	  BSP_LED_On(LED_GREEN);
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  BSP_LED_Off(LED_GREEN);
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+	  HAL_Delay(100);
+	  if (BSP_PB_GetState(BUTTON_KEY) == 1)
+		  break;
+  }
+  BSP_LED_Off(LED_GREEN);
   while (1)
   {
 	  random = HAL_RNG_GetRandomNumber(&rndCfg) % 10000;
 	  HAL_Delay(1000 + random);
+
 	  BSP_LED_On(LED_GREEN);
 	  tickstart = HAL_GetTick();
 	  while (BSP_PB_GetState(BUTTON_KEY) == 0)
