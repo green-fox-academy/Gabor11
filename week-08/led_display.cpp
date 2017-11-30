@@ -290,74 +290,99 @@ void turn_off(uint8_t pin)
 	}
 }
 
+void display(uint8_t a[15])
+{
+	for (int i = 0; i < 15; i++) {
+		if (a[i] == 1)
+			light_up(i);
+		else
+			turn_off(i);
+	}
+}
+
+uint8_t* reverse(uint8_t a[15])
+{
+	uint8_t *ret = new uint8_t [15];
+	for (int i = 0; i < 15; i++) {
+		if (a[i] == 1)
+			ret[i] = 0;
+		else
+			ret[i] = 1;
+	}
+	return ret;
+}
+
+
 int main()
 {
 
 	initialize();
 
+	uint8_t one[] = {1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0};
+	uint8_t two[] = {1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1};
+	uint8_t three[] = {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1};
+	uint8_t four[] = {1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1};
+	uint8_t five[] = {1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1};
+	uint8_t six[] = {1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1};
+	uint8_t seven[] = {0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1};
+	uint8_t eight[] = {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1};
+	uint8_t nine[] = {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1};
+	uint8_t zero[] = {1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1};
+
+	uint8_t shape1[] = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t shape2[] = {0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0};
+	uint8_t shape3[] = {0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0};
+	uint8_t shape4[] = {0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0};
+	uint8_t shape5[] = {0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0};
+	uint8_t shape6[] = {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1};
+	uint8_t shape7[] = {0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0};
+	uint8_t shape8[] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0};
+
 	while (1) {
-		light_up(0);
+		display(nine);
+		HAL_Delay(1000);
+		display(eight);
+		HAL_Delay(1000);
+		display(seven);
+		HAL_Delay(1000);
+		display(six);
+		HAL_Delay(1000);
+		display(five);
+		HAL_Delay(1000);
+		display(four);
+		HAL_Delay(1000);
+		display(three);
+		HAL_Delay(1000);
+		display(two);
+		HAL_Delay(1000);
+		display(one);
+		HAL_Delay(1000);
+		display(zero);
+		HAL_Delay(1000);
+
+		display(shape1);
 		HAL_Delay(200);
-		turn_off(0);
-
-		light_up(1);
+		display(reverse(shape1));
 		HAL_Delay(200);
-		turn_off(1);
-
-		light_up(2);
+		display(shape2);
 		HAL_Delay(200);
-		turn_off(2);
-
-		light_up(3);
+		display(reverse(shape2));
 		HAL_Delay(200);
-		turn_off(3);
-
-		light_up(4);
+		display(shape3);
+		HAL_Delay(300);
+		display(shape4);
+		HAL_Delay(100);
+		display(shape5);
 		HAL_Delay(200);
-		turn_off(4);
-
-		light_up(5);
+		display(reverse(shape5));
 		HAL_Delay(200);
-		turn_off(5);
-
-		light_up(6);
+		display(shape6);
 		HAL_Delay(200);
-		turn_off(6);
-
-		light_up(7);
+		display(reverse(shape6));
+		display(shape7);
+		HAL_Delay(100);
+		display(shape8);
 		HAL_Delay(200);
-		turn_off(7);
-
-		light_up(8);
-		HAL_Delay(200);
-		turn_off(8);
-
-		light_up(9);
-		HAL_Delay(200);
-		turn_off(9);
-
-		light_up(10);
-		HAL_Delay(200);
-		turn_off(10);
-
-		light_up(11);
-		HAL_Delay(200);
-		turn_off(11);
-
-		light_up(12);
-		HAL_Delay(200);
-		turn_off(12);
-
-		light_up(13);
-		HAL_Delay(200);
-		turn_off(13);
-
-		light_up(14);
-		HAL_Delay(200);
-		turn_off(14);
-
-
-
 	}
 
 
