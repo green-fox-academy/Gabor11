@@ -103,36 +103,42 @@ int main(void)
   /* Add your application code here
      */
  // HAL_MspInit();
+  /* TIMER INITIALIZATION */
+
+	__HAL_RCC_TIM1_CLK_ENABLE();              // enable TIM1 clock
 
 	TIM_HandleTypeDef    TimHandle;           //the timer's config structure
 
+	uint32_t uwPrescalerValue = (uint32_t)((SystemCoreClock / 2) / 10000) - 1;
+
 	TimHandle.Instance               = TIM1;
-	TimHandle.Init.Period            = 1000;
-	TimHandle.Init.Prescaler         = 1;
-	TimHandle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	TimHandle.Init.Period            = 10000 - 1;
+	TimHandle.Init.Prescaler         = uwPrescalerValue;
+	TimHandle.Init.ClockDivision     = 0;
 	TimHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
-	TimHandle.Init.RepetitionCounter = 1;
-	TimHandle.Channel 				 = TIM_CHANNEL_1;
+	TimHandle.Init.RepetitionCounter = 0;
+	TimHandle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	//TimHandle.Channel 				 = TIM_CHANNEL_1;
 
-	//HAL_TIM_Base_Init(&TimHandle);            //Configure the timer
+	HAL_TIM_Base_Init(&TimHandle);            //Configure the timer
 
-	//HAL_TIM_Base_Start(&TimHandle);
-
+	HAL_TIM_Base_Start(&TimHandle);
+/*
 	TIM_OC_InitTypeDef sConfig;
 
 	HAL_TIM_PWM_Init(&TimHandle);
 
 	sConfig.OCMode       = TIM_OCMODE_PWM1;
-	HAL_TIM_PWM_ConfigChannel(&TimHandle, sConfig, TimHandle.Channel);
+	HAL_TIM_PWM_ConfigChannel(&TimHandle, sConfig, TIM_CHANNEL_1);
 
-	HAL_TIM_PWM_Start(&TimHandle, TimHandle.Channel);
+	HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1);
+*/
+	/* END OF TIMER INITIALIZATION */
 
-  //HAL_GPIO_Init(GPIOA, )
-	__HAL_RCC_TIM1_CLK_ENABLE();              // enable TIM1 clock
 
 	__HAL_RCC_GPIOA_CLK_ENABLE();             //Enable GPIOA clock
 
-	GPIO_InitTypeDef ledConfig;               //set upthe pin, push-pull, no pullup..etc
+	GPIO_InitTypeDef ledConfig;               //set up the pin, push-pull, no pullup..etc
 
 	ledConfig.Alternate = GPIO_AF1_TIM1;      // and the alternate function is to use TIM1 timer's first channel
     ledConfig.Pin = GPIO_PIN_8;
@@ -141,41 +147,48 @@ int main(void)
     ledConfig.Speed = GPIO_SPEED_HIGH;
 
 	HAL_GPIO_Init(GPIOA, &ledConfig);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); // initially the LED is off
 
-  uart_handle.Init.BaudRate   = 115200;
-  uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
-  uart_handle.Init.StopBits   = UART_STOPBITS_1;
-  uart_handle.Init.Parity     = UART_PARITY_NONE;
-  uart_handle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-  uart_handle.Init.Mode       = UART_MODE_TX_RX;
+    uart_handle.Init.BaudRate   = 115200;
+    uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
+    uart_handle.Init.StopBits   = UART_STOPBITS_1;
+    uart_handle.Init.Parity     = UART_PARITY_NONE;
+    uart_handle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+    uart_handle.Init.Mode       = UART_MODE_TX_RX;
 
-  BSP_COM_Init(COM1, &uart_handle);
+    BSP_COM_Init(COM1, &uart_handle);
 
-  /* Output without printf, using HAL function*/
-  //char msg[] = "UART HAL Example\r\n";
-  //HAL_UART_Transmit(&uart_handle, msg, strlen(msg), 100);
+	/* Output without printf, using HAL function*/
+	//char msg[] = "UART HAL Example\r\n";
+	//HAL_UART_Transmit(&uart_handle, msg, strlen(msg), 100);
 
-  /* Output a message using printf function */
-  printf("\n-----------------WELCOME-----------------\r\n");
-  printf("**********in STATIC timer & pwm WS**********\r\n\n");
+	/* Output a message using printf function */
+	printf("\n-----------------WELCOME-----------------\r\n");
+	printf("**********in STATIC timer & pwm WS**********\r\n\n");
+	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+	//HAL_Delay(100000);
 
-	  while (1)
+	  while(1)
 	  {
 		  /*HAL_GPIO_WritePin(GPIOI, 0x0002U, GPIO_PIN_RESET);
 		  HAL_Delay(500);
 		  HAL_GPIO_WritePin(GPIOI, 0x0002U, GPIO_PIN_SET);
 		  HAL_Delay(500);*/
 
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-		  if (TIM1->CNT < 1000) {
-			  printf("%d\n", HAL_TIM_Base_GetState(&TimHandle));
-			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-		  } else {
-			  printf("%d\n", HAL_TIM_Base_GetState(&TimHandle));
+
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+		  if (TIM1->CNT < 5000) {
 			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+			  printf("%d\n", (int)TIM1->CNT);
+
+		  } else {
+
+		//	  printf("%d\n", (int)TIM1->CNT);
+		//	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 		  }
 	  }
+
+	  BSP_COM_DeInit(COM1, &uart_handle);
 }
 
 /**
