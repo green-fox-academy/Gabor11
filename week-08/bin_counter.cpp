@@ -191,58 +191,6 @@ void initialize()
 void light_up(uint8_t pin) {
 	switch (pin) {
 	case 0:
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 1:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 2:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 3:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 4:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 5:
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 6:
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 7:
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 8:
-		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 9:
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 10:
-		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 11:
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 12:
-		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 13:
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_3, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	case 14:
-		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_2, GPIO_PIN_SET);   // setting the pin to 1
-		break;
-	}
-}
-
-
-void turn_off(uint8_t pin)
-{
-	switch (pin) {
-	case 0:
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);   // setting the pin to 1
 		break;
 	case 1:
@@ -290,6 +238,58 @@ void turn_off(uint8_t pin)
 	}
 }
 
+
+void turn_off(uint8_t pin)
+{
+	switch (pin) {
+	case 0:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 1:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 2:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 3:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 4:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 5:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 6:
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 7:
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 8:
+		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 9:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 10:
+		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 11:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 12:
+		HAL_GPIO_WritePin(GPIOH, GPIO_PIN_6, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 13:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_3, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 14:
+		HAL_GPIO_WritePin(GPIOI, GPIO_PIN_2, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	}
+}
+
 void display(uint8_t a[15])
 {
 	for (int i = 0; i < 15; i++) {
@@ -318,54 +318,23 @@ int main()
 
 	initialize();
 
-	uint32_t num = 0;
-	// uint8_t remainder = 0;
 
 
 	while (1) {
+
 		 for (int i = 0; i < 32; i++) {
 
-			  num = i;
+				  GPIOF->ODR = GPIOF->ODR & 0;
+				  GPIOF->ODR = GPIOF->ODR | i;
+				  GPIOF->ODR = GPIOF->ODR << 6;
 
-			  turn_off(1);
-			  turn_off(2);
-			  turn_off(3);
-			  turn_off(4);
-			  turn_off(5);
-
-			  if (num % 2 == 1) {
-				  light_up(1);
-
+				  HAL_Delay(1000);
 			  }
-			  num = num / 2;
-			  if (num % 2 == 1) {
-				  light_up(2);
-
-			  }
-			  num = num / 2;
-			  if (num % 2 == 1) {
-				  light_up(3);
-
-			  }
-			  num = num / 2;
-			  if (num % 2 == 1) {
-				  light_up(4);
-
-			  }
-			  num = num / 2;
-			  if (num % 2 == 1) {
-				  light_up(5);
-
-			  }
-			  num = num / 2;
-
-			  HAL_Delay(500);
-		  }
 
 	}
 
 
-}
+
 
 
 
@@ -386,7 +355,7 @@ int main()
 
   }
 	*/
-
+}
 
 /**
   * @brief  System Clock Configuration
