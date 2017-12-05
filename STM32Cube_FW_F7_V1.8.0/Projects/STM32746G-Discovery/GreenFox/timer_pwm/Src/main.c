@@ -118,11 +118,21 @@ int main(void)
 	TimHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
 	TimHandle.Init.RepetitionCounter = 0;
 	TimHandle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-	//TimHandle.Channel 				 = TIM_CHANNEL_1;
+	TimHandle.Channel 				 = TIM_CHANNEL_1;
 
 	HAL_TIM_Base_Init(&TimHandle);            //Configure the timer
 
 	HAL_TIM_Base_Start(&TimHandle);
+
+	TIM_OC_InitTypeDef sConfig;
+
+	// PWM Mode
+	HAL_TIM_PWM_Init();
+
+	sConfig.OCMode       = TIM_OCMODE_PWM1;
+	HAL_TIM_PWM_ConfigChannel(&TimHandle, sConfig, TIM_CHANNEL_1);
+
+	HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1);
 /*
 	TIM_OC_InitTypeDef sConfig;
 
@@ -135,7 +145,7 @@ int main(void)
 */
 	/* END OF TIMER INITIALIZATION */
 
-
+	/* LED INITIALIZATION ON PA8 */
 	__HAL_RCC_GPIOA_CLK_ENABLE();             //Enable GPIOA clock
 
 	GPIO_InitTypeDef ledConfig;               //set up the pin, push-pull, no pullup..etc
