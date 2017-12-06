@@ -53,6 +53,7 @@
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef uart_handle;
 
+
 /* Private function prototypes -----------------------------------------------*/
 
 #ifdef __GNUC__
@@ -103,47 +104,7 @@ int main(void)
   /* Add your application code here
      */
  // HAL_MspInit();
-  /* TIMER INITIALIZATION */
 
-	__HAL_RCC_TIM1_CLK_ENABLE();              // enable TIM1 clock
-
-	TIM_HandleTypeDef    TimHandle;           //the timer's config structure
-
-	uint32_t uwPrescalerValue = (uint32_t)((SystemCoreClock / 2) / 10000) - 1;
-
-	TimHandle.Instance               = TIM1;
-	TimHandle.Init.Period            = 10000 - 1;
-	TimHandle.Init.Prescaler         = uwPrescalerValue;
-	TimHandle.Init.ClockDivision     = 0;
-	TimHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
-	TimHandle.Init.RepetitionCounter = 0;
-	TimHandle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-	TimHandle.Channel 				 = TIM_CHANNEL_1;
-
-	HAL_TIM_Base_Init(&TimHandle);            //Configure the timer
-
-	HAL_TIM_Base_Start(&TimHandle);
-
-	TIM_OC_InitTypeDef sConfig;
-
-	// PWM Mode
-	HAL_TIM_PWM_Init();
-
-	sConfig.OCMode       = TIM_OCMODE_PWM1;
-	HAL_TIM_PWM_ConfigChannel(&TimHandle, sConfig, TIM_CHANNEL_1);
-
-	HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1);
-/*
-	TIM_OC_InitTypeDef sConfig;
-
-	HAL_TIM_PWM_Init(&TimHandle);
-
-	sConfig.OCMode       = TIM_OCMODE_PWM1;
-	HAL_TIM_PWM_ConfigChannel(&TimHandle, sConfig, TIM_CHANNEL_1);
-
-	HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1);
-*/
-	/* END OF TIMER INITIALIZATION */
 
 	/* LED INITIALIZATION ON PA8 */
 	__HAL_RCC_GPIOA_CLK_ENABLE();             //Enable GPIOA clock
@@ -151,13 +112,47 @@ int main(void)
 	GPIO_InitTypeDef ledConfig;               //set up the pin, push-pull, no pullup..etc
 
 	ledConfig.Alternate = GPIO_AF1_TIM1;      // and the alternate function is to use TIM1 timer's first channel
-    ledConfig.Pin = GPIO_PIN_8;
-    ledConfig.Mode = GPIO_MODE_OUTPUT_PP;
-    ledConfig.Pull = GPIO_PULLUP;
-    ledConfig.Speed = GPIO_SPEED_HIGH;
+	ledConfig.Pin = GPIO_PIN_8;
+	ledConfig.Mode = GPIO_MODE_AF_PP;
+	ledConfig.Pull = GPIO_NOPULL;
+	ledConfig.Speed = GPIO_SPEED_FAST;
 
 	HAL_GPIO_Init(GPIOA, &ledConfig);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); // initially the LED is off
+	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, SET);
+
+	/* END OF LED INITIALIZATION */
+
+  /* TIMER INITIALIZATION */
+
+	__HAL_RCC_TIM1_CLK_ENABLE();              // enable TIM1 clock
+
+	TIM_HandleTypeDef  TimHandle;           //the timer's config structure
+	TIM_OC_InitTypeDef sConfig;
+
+	//uint32_t uwPrescalerValue = (uint16_t)108000000 / 4 - 1;
+
+	TimHandle.Instance               = TIM1;
+	TimHandle.Init.Period            = 1646;
+	TimHandle.Init.Prescaler         = 0xffff;
+	TimHandle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	TimHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
+	//TimHandle.Init.RepetitionCounter = 0;
+
+	//HAL_TIM_Base_Init(&TimHandle);            //Configure the timer
+
+	//HAL_TIM_Base_Start(&TimHandle);
+
+	// PWM Mode
+	HAL_TIM_PWM_Init(&TimHandle);
+
+	sConfig.OCMode      = TIM_OCMODE_PWM1;
+	sConfig.Pulse		= 823;
+	HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_1);
+
+	HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1);
+
+	/* END OF TIMER INITIALIZATION */
+
 
     uart_handle.Init.BaudRate   = 115200;
     uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
@@ -186,17 +181,18 @@ int main(void)
 		  HAL_Delay(500);*/
 
 
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-		  if (TIM1->CNT < 5000) {
+/*
+		  if (TIM1->CNT < 900) {
 			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 			  printf("%d\n", (int)TIM1->CNT);
 
 		  } else {
-
+			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
 		//	  printf("%d\n", (int)TIM1->CNT);
 		//	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-		  }
+		  }	  */
 	  }
+
 
 	  BSP_COM_DeInit(COM1, &uart_handle);
 }
