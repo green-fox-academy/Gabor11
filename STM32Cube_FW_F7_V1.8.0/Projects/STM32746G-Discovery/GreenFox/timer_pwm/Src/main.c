@@ -55,8 +55,12 @@ UART_HandleTypeDef uart_handle;
 GPIO_InitTypeDef ledConfig;
 TIM_HandleTypeDef  TimHandle;           //the timer's config structure
 TIM_OC_InitTypeDef sConfig;
+GPIO_InitTypeDef buttonconf;
 
-volatile uint8_t repetition = 15;
+//volatile uint8_t repetition = 15;
+volatile uint32_t dim_factor = 100;
+volatile uint32_t delay_from_last = 0;
+volatile uint32_t start = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -125,6 +129,33 @@ int main(void)
 
 	uart_conf_com_init(&uart_handle);
 
+	/* BUTTON INITIALIZATION */
+
+	//BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_EXTI);
+
+	__HAL_RCC_GPIOI_CLK_ENABLE();         // enable the GPIOI clock
+
+
+	buttonconf.Pin = GPIO_PIN_11;               // the pin is the 11
+
+	/* We know from the board's datasheet that a resistor is already installed externally for this button (so it's not floating), we don't want to use the internal pull feature */
+	buttonconf.Pull = GPIO_NOPULL;
+	buttonconf.Speed = GPIO_SPEED_FAST;         // port speed to fast
+
+	/* Here is the trick: our mode is interrupt on rising edge */
+	buttonconf.Mode = GPIO_MODE_IT_RISING;
+
+	HAL_GPIO_Init(GPIOI, &buttonconf);          // call the HAL init
+
+	/* END OF BUTTON INITIALIZATION */
+
+	/* SETTING UP NVIC FOR INTERRUPT HANDLING ON A11 BUTTON */
+	/* assign the lowest priority to our interrupt line */
+	HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0x0F, 0x0f);
+
+    /* tell the interrupt handling unit to process our interrupts */
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 	/* Output without printf, using HAL function*/
 	//char msg[] = "UART HAL Example\r\n";
 	//HAL_UART_Transmit(&uart_handle, msg, strlen(msg), 100);
@@ -135,17 +166,18 @@ int main(void)
 	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 	//HAL_Delay(100000);
 
-	// int dirUp = 1;
+	start = HAL_GetTick();
 	while (1) {
-	/*	if (TIM1->CCR1 == 1646) {
-			dirUp = 0;
+		/*if (TIM1->CCR1 == 1646) {
+			dim_factor = 0;
 		}
 		if (TIM1->CCR1 == 100) {
-			dirUp = 1;
-		}
-		dirUp ? (TIM1->CCR1++) : (TIM1->CCR1--);
+			dim_factor = 1;
+		}*/
+		if (TIM1->CCR1 > 0)
+			TIM1->CCR1 = TIM1->CCR1 - 2;
 		HAL_Delay(1);
-		*/
+
 	  }
 
 
@@ -164,7 +196,7 @@ void timer_1_initialize_start(TIM_HandleTypeDef *TimHandle, TIM_OC_InitTypeDef *
 
 	TimHandle->Instance               = TIM1;
 	TimHandle->Init.Period            = 1646;
-	TimHandle->Init.Prescaler         = 0xffff;
+	TimHandle->Init.Prescaler         = 0x0011;
 	TimHandle->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
 	TimHandle->Init.CounterMode       = TIM_COUNTERMODE_UP;
 	//TimHandle.Init.RepetitionCounter = 0;
@@ -177,7 +209,7 @@ void timer_1_initialize_start(TIM_HandleTypeDef *TimHandle, TIM_OC_InitTypeDef *
 	HAL_TIM_PWM_Init(TimHandle);
 
 	sConfig->OCMode      = TIM_OCMODE_PWM1;
-	sConfig->Pulse		= 100;
+	sConfig->Pulse		= 50;
 	HAL_TIM_PWM_ConfigChannel(TimHandle, sConfig, TIM_CHANNEL_1);
 
 	HAL_TIM_PWM_Start_IT(TimHandle, TIM_CHANNEL_1);  // -> start it with interrupt
@@ -226,17 +258,36 @@ void TIM1_UP_TIM10_IRQHandler()
 
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *TimHandle)
 {
-	repetition--;
+	/*repetition--;
 		if (repetition == 0) {
 			HAL_TIM_PWM_Stop_IT(TimHandle, TIM_CHANNEL_1);
 		}
-		printf("PWM pulse finished\r\n");
+		printf("PWM pulse finished\r\n");*/
 }
 
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	printf("Period elapsed!\r\n");
 }
+
+void EXTI15_10_IRQHandler()
+{
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_11);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	delay_from_last = HAL_GetTick() - start;
+	start = HAL_GetTick();
+	if (delay_from_last > 2000)
+		TIM1->CCR1 = 50;
+	else if (delay_from_last > 30)
+		TIM1->CCR1 = (2000 - delay_from_last / 2000) * 500;
+	else
+		TIM1->CCR1 = 500;
+	printf("Callback reached, delay: %d\n", delay_from_last);
+}
+
 /**
   * @brief  Retargets the C library printf function to the USART.
   * @param  None
