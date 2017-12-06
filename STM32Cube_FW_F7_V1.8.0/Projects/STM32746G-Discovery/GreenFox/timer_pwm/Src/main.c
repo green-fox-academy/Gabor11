@@ -56,6 +56,8 @@ GPIO_InitTypeDef ledConfig;
 TIM_HandleTypeDef  TimHandle;           //the timer's config structure
 TIM_OC_InitTypeDef sConfig;
 
+volatile uint8_t repetition = 15;
+
 /* Private function prototypes -----------------------------------------------*/
 
 void timer_1_initialize_start(TIM_HandleTypeDef *TimHandle, TIM_OC_InitTypeDef *sConfig);
@@ -116,6 +118,9 @@ int main(void)
 	/* TIMER INITIALIZATION */
 	timer_1_initialize_start(&TimHandle, &sConfig);
 
+	HAL_NVIC_SetPriority(TIM1_CC_IRQn, 0x0f, 0x00);
+	HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
+
 	/* UART INITIALIZATION AND STARTING COMMUNICATION */
 
 	uart_conf_com_init(&uart_handle);
@@ -130,9 +135,17 @@ int main(void)
 	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 	//HAL_Delay(100000);
 
-	  while(1)
-	  {
-
+	// int dirUp = 1;
+	while (1) {
+	/*	if (TIM1->CCR1 == 1646) {
+			dirUp = 0;
+		}
+		if (TIM1->CCR1 == 100) {
+			dirUp = 1;
+		}
+		dirUp ? (TIM1->CCR1++) : (TIM1->CCR1--);
+		HAL_Delay(1);
+		*/
 	  }
 
 
@@ -151,7 +164,7 @@ void timer_1_initialize_start(TIM_HandleTypeDef *TimHandle, TIM_OC_InitTypeDef *
 
 	TimHandle->Instance               = TIM1;
 	TimHandle->Init.Period            = 1646;
-	TimHandle->Init.Prescaler         = 0x0011;
+	TimHandle->Init.Prescaler         = 0xffff;
 	TimHandle->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
 	TimHandle->Init.CounterMode       = TIM_COUNTERMODE_UP;
 	//TimHandle.Init.RepetitionCounter = 0;
@@ -167,7 +180,9 @@ void timer_1_initialize_start(TIM_HandleTypeDef *TimHandle, TIM_OC_InitTypeDef *
 	sConfig->Pulse		= 100;
 	HAL_TIM_PWM_ConfigChannel(TimHandle, sConfig, TIM_CHANNEL_1);
 
-	HAL_TIM_PWM_Start(TimHandle, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start_IT(TimHandle, TIM_CHANNEL_1);  // -> start it with interrupt
+
+	// HAL_TIM_PWM_ Start(TimHandle, TIM_CHANNEL_1); // -> start it without interrupts
 }
 
 void gpio_a8_pwm_initialize(GPIO_InitTypeDef *ledConfig)
@@ -197,6 +212,31 @@ void uart_conf_com_init(UART_HandleTypeDef *uart_handle)
     BSP_COM_Init(COM1, uart_handle);
 }
 
+/* INTERRUPTS */
+
+void TIM1_CC_IRQHandler()
+{
+	HAL_TIM_IRQHandler(&TimHandle);
+}
+
+void TIM1_UP_TIM10_IRQHandler()
+{
+	HAL_TIM_IRQHandler(&TimHandle);
+}
+
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *TimHandle)
+{
+	repetition--;
+		if (repetition == 0) {
+			HAL_TIM_PWM_Stop_IT(TimHandle, TIM_CHANNEL_1);
+		}
+		printf("PWM pulse finished\r\n");
+}
+
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	printf("Period elapsed!\r\n");
+}
 /**
   * @brief  Retargets the C library printf function to the USART.
   * @param  None
