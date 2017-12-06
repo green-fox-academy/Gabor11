@@ -52,9 +52,16 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef uart_handle;
-
+GPIO_InitTypeDef ledConfig;
+TIM_HandleTypeDef  TimHandle;           //the timer's config structure
+TIM_OC_InitTypeDef sConfig;
 
 /* Private function prototypes -----------------------------------------------*/
+
+void timer_1_initialize_start(TIM_HandleTypeDef *TimHandle, TIM_OC_InitTypeDef *sConfig);
+void gpio_a8_pwm_initialize(GPIO_InitTypeDef *ledConfig);
+void uart_conf_com_init(UART_HandleTypeDef *uart_handle);
+
 
 #ifdef __GNUC__
 /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
@@ -103,65 +110,15 @@ int main(void)
 
   /* Add your application code here
      */
- // HAL_MspInit();
-
-
 	/* LED INITIALIZATION ON PA8 */
-	__HAL_RCC_GPIOA_CLK_ENABLE();             //Enable GPIOA clock
+  	gpio_a8_pwm_initialize(&ledConfig);
 
-	GPIO_InitTypeDef ledConfig;               //set up the pin, push-pull, no pullup..etc
+	/* TIMER INITIALIZATION */
+	timer_1_initialize_start(&TimHandle, &sConfig);
 
-	ledConfig.Alternate = GPIO_AF1_TIM1;      // and the alternate function is to use TIM1 timer's first channel
-	ledConfig.Pin = GPIO_PIN_8;
-	ledConfig.Mode = GPIO_MODE_AF_PP;
-	ledConfig.Pull = GPIO_NOPULL;
-	ledConfig.Speed = GPIO_SPEED_FAST;
+	/* UART INITIALIZATION AND STARTING COMMUNICATION */
 
-	HAL_GPIO_Init(GPIOA, &ledConfig);
-	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, SET);
-
-	/* END OF LED INITIALIZATION */
-
-  /* TIMER INITIALIZATION */
-
-	__HAL_RCC_TIM1_CLK_ENABLE();              // enable TIM1 clock
-
-	TIM_HandleTypeDef  TimHandle;           //the timer's config structure
-	TIM_OC_InitTypeDef sConfig;
-
-	//uint32_t uwPrescalerValue = (uint16_t)108000000 / 4 - 1;
-
-	TimHandle.Instance               = TIM1;
-	TimHandle.Init.Period            = 1646;
-	TimHandle.Init.Prescaler         = 0xffff;
-	TimHandle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
-	TimHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
-	//TimHandle.Init.RepetitionCounter = 0;
-
-	//HAL_TIM_Base_Init(&TimHandle);            //Configure the timer
-
-	//HAL_TIM_Base_Start(&TimHandle);
-
-	// PWM Mode
-	HAL_TIM_PWM_Init(&TimHandle);
-
-	sConfig.OCMode      = TIM_OCMODE_PWM1;
-	sConfig.Pulse		= 823;
-	HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_1);
-
-	HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1);
-
-	/* END OF TIMER INITIALIZATION */
-
-
-    uart_handle.Init.BaudRate   = 115200;
-    uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
-    uart_handle.Init.StopBits   = UART_STOPBITS_1;
-    uart_handle.Init.Parity     = UART_PARITY_NONE;
-    uart_handle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-    uart_handle.Init.Mode       = UART_MODE_TX_RX;
-
-    BSP_COM_Init(COM1, &uart_handle);
+	uart_conf_com_init(&uart_handle);
 
 	/* Output without printf, using HAL function*/
 	//char msg[] = "UART HAL Example\r\n";
@@ -175,26 +132,69 @@ int main(void)
 
 	  while(1)
 	  {
-		  /*HAL_GPIO_WritePin(GPIOI, 0x0002U, GPIO_PIN_RESET);
-		  HAL_Delay(500);
-		  HAL_GPIO_WritePin(GPIOI, 0x0002U, GPIO_PIN_SET);
-		  HAL_Delay(500);*/
 
-
-/*
-		  if (TIM1->CNT < 900) {
-			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-			  printf("%d\n", (int)TIM1->CNT);
-
-		  } else {
-			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-		//	  printf("%d\n", (int)TIM1->CNT);
-		//	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-		  }	  */
 	  }
 
 
 	  BSP_COM_DeInit(COM1, &uart_handle);
+}
+
+/* Initializing functions */
+
+void timer_1_initialize_start(TIM_HandleTypeDef *TimHandle, TIM_OC_InitTypeDef *sConfig)
+{
+	__HAL_RCC_TIM1_CLK_ENABLE();              // enable TIM1 clock
+
+
+
+	//uint32_t uwPrescalerValue = (uint16_t)108000000 / 4 - 1;
+
+	TimHandle->Instance               = TIM1;
+	TimHandle->Init.Period            = 1646;
+	TimHandle->Init.Prescaler         = 0x0011;
+	TimHandle->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	TimHandle->Init.CounterMode       = TIM_COUNTERMODE_UP;
+	//TimHandle.Init.RepetitionCounter = 0;
+
+	HAL_TIM_Base_Init(TimHandle);            //Configure the timer
+
+	HAL_TIM_Base_Start(TimHandle);
+
+	// PWM Mode
+	HAL_TIM_PWM_Init(TimHandle);
+
+	sConfig->OCMode      = TIM_OCMODE_PWM1;
+	sConfig->Pulse		= 100;
+	HAL_TIM_PWM_ConfigChannel(TimHandle, sConfig, TIM_CHANNEL_1);
+
+	HAL_TIM_PWM_Start(TimHandle, TIM_CHANNEL_1);
+}
+
+void gpio_a8_pwm_initialize(GPIO_InitTypeDef *ledConfig)
+{
+	__HAL_RCC_GPIOA_CLK_ENABLE();             //Enable GPIOA clock
+
+	               //set up the pin, push-pull, no pullup..etc
+
+	ledConfig->Alternate = GPIO_AF1_TIM1;      // and the alternate function is to use TIM1 timer's first channel
+	ledConfig->Pin = GPIO_PIN_8;
+	ledConfig->Mode = GPIO_MODE_AF_PP;
+	ledConfig->Pull = GPIO_NOPULL;
+	ledConfig->Speed = GPIO_SPEED_FAST;
+
+	HAL_GPIO_Init(GPIOA, ledConfig);
+}
+
+void uart_conf_com_init(UART_HandleTypeDef *uart_handle)
+{
+    uart_handle->Init.BaudRate   = 115200;
+    uart_handle->Init.WordLength = UART_WORDLENGTH_8B;
+    uart_handle->Init.StopBits   = UART_STOPBITS_1;
+    uart_handle->Init.Parity     = UART_PARITY_NONE;
+    uart_handle->Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+    uart_handle->Init.Mode       = UART_MODE_TX_RX;
+
+    BSP_COM_Init(COM1, uart_handle);
 }
 
 /**
