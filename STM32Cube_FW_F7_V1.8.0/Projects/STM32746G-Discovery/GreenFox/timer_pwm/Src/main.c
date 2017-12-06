@@ -174,8 +174,12 @@ int main(void)
 		if (TIM1->CCR1 == 100) {
 			dim_factor = 1;
 		}*/
-		if (TIM1->CCR1 > 0)
-			TIM1->CCR1 = TIM1->CCR1 - 2;
+		if (TIM1->CCR1 > 1000)
+			TIM1->CCR1 = TIM1->CCR1 - 10;
+		else if (TIM1->CCR1 > 500)
+			TIM1->CCR1 = TIM1->CCR1 - 5;
+		else if (TIM1->CCR1 > 0)
+			TIM1->CCR1 = TIM1->CCR1 - 1;
 		HAL_Delay(1);
 
 	  }
@@ -280,12 +284,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	delay_from_last = HAL_GetTick() - start;
 	start = HAL_GetTick();
 	if (delay_from_last > 2000)
-		TIM1->CCR1 = 50;
-	else if (delay_from_last > 30)
-		TIM1->CCR1 = (2000 - delay_from_last / 2000) * 500;
-	else
 		TIM1->CCR1 = 500;
-	printf("Callback reached, delay: %d\n", delay_from_last);
+	else if (delay_from_last > 500)
+		TIM1->CCR1 = (2000 - delay_from_last / 2000) * 1000;
+	else
+		TIM1->CCR1 = 1000;
+	printf("Callback reached, delay: %d\n", (int)delay_from_last);
 }
 
 /**
