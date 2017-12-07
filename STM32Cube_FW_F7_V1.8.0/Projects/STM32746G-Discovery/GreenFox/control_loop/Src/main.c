@@ -56,7 +56,9 @@ GPIO_InitTypeDef PBup;
 GPIO_InitTypeDef PBdown;
 GPIO_InitTypeDef feedback;
 TIM_HandleTypeDef timh;
+TIM_HandleTypeDef timh3;
 TIM_OC_InitTypeDef output_compare_config;
+TIM_OC_InitTypeDef input_capture_config;
 GPIO_InitTypeDef gate;
 
 volatile uint32_t timIntPeriod;
@@ -66,6 +68,7 @@ volatile uint32_t timIntPeriod;
 void init_buttons(GPIO_InitTypeDef *PBup, GPIO_InitTypeDef *PBdown);
 void init_feedback(GPIO_InitTypeDef *feedback);
 void timer_1_initialize_start(TIM_HandleTypeDef *timh, TIM_OC_InitTypeDef *output_compare_config);
+void timer_3_initialize_start(TIM_HandleTypeDef *timh3, TIM_OC_InitTypeDef *input_capture_config);
 void init_gate(GPIO_InitTypeDef *gate);
 
 #ifdef __GNUC__
@@ -116,6 +119,7 @@ int main(void) {
 	/* INPUT INITIALIZATIONS */
 
 	init_buttons(&PBup, &PBdown);
+	timer_3_initialize_start(TIM_HandleTypeDef *timh3, TIM_OC_InitTypeDef *input_capture_config);
 	init_feedback(&feedback);
 
 	/* OUTPUT INITIALIZATIONS */
@@ -175,9 +179,9 @@ void init_feedback(GPIO_InitTypeDef *feedback)
 {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
-	feedback->Pin = GPIO_PIN_0;
-	feedback->Mode = GPIO_MODE_IT_RISING;
-	feedback->Pull = GPIO_NOPULL;
+	feedback->Pin = GPIO_PIN_15;
+	feedback->Mode = GPIO_MODE_IT_FALLING;
+	feedback->Pull = GPIO_PULLUP;
 	feedback->Speed = GPIO_SPEED_FAST;
 	HAL_GPIO_Init(GPIOA, feedback);
 
@@ -222,6 +226,33 @@ void timer_1_initialize_start(TIM_HandleTypeDef *timh, TIM_OC_InitTypeDef *outpu
 	//HAL_TIM_PWM_Start_IT(timh, TIM_CHANNEL_1);  // -> start it with interrupt
 
 	HAL_TIM_PWM_Start(timh, TIM_CHANNEL_1); // -> start it without interrupts
+}
+
+void timer_3_initialize_start(TIM_HandleTypeDef *timh3, TIM_IC_InitTypeDef *input_capture_config)
+{
+	__HAL_RCC_TIM1_CLK_ENABLE();              // enable TIM1 clock
+
+
+
+	timh3->Instance               = TIM3;
+	timh3->Init.Period            = 0xffff;
+	timh3->Init.Prescaler         = 0;
+	timh3->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	timh3->Init.CounterMode       = TIM_COUNTERMODE_UP;
+	timh3->Init.RepetitionCounter = 0;
+	timh3->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+	HAL_TIM_IC_Init(timh3);            //Configure the timer
+
+	/*##-2- Configure the Input Capture channel ################################*/
+	/* Configure the Input Capture of channel 2 */
+	input_capture_config->ICPolarity  = TIM_ICPOLARITY_RISING;
+	input_capture_config->ICSelection = TIM_ICSELECTION_DIRECTTI;
+	input_capture_config->ICPrescaler = TIM_ICPSC_DIV1;
+	input_capture_config->ICFilter    = 0;
+	HAL_TIM_IC_ConfigChannel(timh3, input_capture_config, TIM_CHANNEL_2);
+
+	HAL_TIM_IC_Start_IT(timh3, TIM_CHANNEL_2); // -> start it with interrupts
 }
 
 void EXTI9_5_IRQHandler()
