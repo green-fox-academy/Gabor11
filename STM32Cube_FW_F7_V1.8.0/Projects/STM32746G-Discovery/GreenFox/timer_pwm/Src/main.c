@@ -168,12 +168,6 @@ int main(void)
 
 	start = HAL_GetTick();
 	while (1) {
-		/*if (TIM1->CCR1 == 1646) {
-			dim_factor = 0;
-		}
-		if (TIM1->CCR1 == 100) {
-			dim_factor = 1;
-		}*/
 		if (TIM1->CCR1 > 1000)
 			TIM1->CCR1 = TIM1->CCR1 - 10;
 		else if (TIM1->CCR1 > 500)
