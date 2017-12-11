@@ -55,10 +55,12 @@ UART_HandleTypeDef uart_handle;
 GPIO_InitTypeDef PBup;
 GPIO_InitTypeDef PBdown;
 GPIO_InitTypeDef feedback;
+volatile uint32_t fb_val = 0;
+volatile uint32_t fb_tick;
 TIM_HandleTypeDef timh;
-TIM_HandleTypeDef timh3;
+TIM_HandleTypeDef timh2;
 TIM_OC_InitTypeDef output_compare_config;
-TIM_OC_InitTypeDef input_capture_config;
+TIM_IC_InitTypeDef input_capture_config;
 GPIO_InitTypeDef gate;
 
 volatile uint32_t timIntPeriod;
@@ -68,7 +70,7 @@ volatile uint32_t timIntPeriod;
 void init_buttons(GPIO_InitTypeDef *PBup, GPIO_InitTypeDef *PBdown);
 void init_feedback(GPIO_InitTypeDef *feedback);
 void timer_1_initialize_start(TIM_HandleTypeDef *timh, TIM_OC_InitTypeDef *output_compare_config);
-void timer_3_initialize_start(TIM_HandleTypeDef *timh3, TIM_OC_InitTypeDef *input_capture_config);
+void timer_2_initialize_start(TIM_HandleTypeDef *timh2, TIM_IC_InitTypeDef *input_capture_config);
 void init_gate(GPIO_InitTypeDef *gate);
 
 #ifdef __GNUC__
@@ -119,7 +121,7 @@ int main(void) {
 	/* INPUT INITIALIZATIONS */
 
 	init_buttons(&PBup, &PBdown);
-	timer_3_initialize_start(TIM_HandleTypeDef *timh3, TIM_OC_InitTypeDef *input_capture_config);
+	timer_2_initialize_start(&timh2, &input_capture_config);
 	init_feedback(&feedback);
 
 	/* OUTPUT INITIALIZATIONS */
@@ -135,6 +137,9 @@ int main(void) {
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 	HAL_NVIC_SetPriority(EXTI15_10_IRQn , 0x0F, 0x00);
 	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+	HAL_NVIC_SetPriority(TIM2_IRQn , 0x0F, 0x00);
+	HAL_NVIC_EnableIRQ(TIM2_IRQn);
+	HAL_NVIC_SetPriority(SysTick_IRQn, 0x0e, 0x00);
 
 	/* Add your application code here
 	 */
@@ -155,6 +160,8 @@ int main(void) {
 
 
 	while (1) {
+		HAL_Delay(5000);
+		printf("%d\n", HAL_TIM_ReadCapturedValue(&timh2, TIM_CHANNEL_1));
 	}
 }
 
@@ -183,6 +190,7 @@ void init_feedback(GPIO_InitTypeDef *feedback)
 	feedback->Mode = GPIO_MODE_IT_FALLING;
 	feedback->Pull = GPIO_PULLUP;
 	feedback->Speed = GPIO_SPEED_FAST;
+	feedback->Alternate = GPIO_AF1_TIM2;
 	HAL_GPIO_Init(GPIOA, feedback);
 
 }
@@ -220,7 +228,7 @@ void timer_1_initialize_start(TIM_HandleTypeDef *timh, TIM_OC_InitTypeDef *outpu
 	HAL_TIM_PWM_Init(timh);
 
 	output_compare_config->OCMode      = TIM_OCMODE_PWM1;
-	output_compare_config->Pulse		= 0;
+	output_compare_config->Pulse		= 200;
 	HAL_TIM_PWM_ConfigChannel(timh, output_compare_config, TIM_CHANNEL_1);
 
 	//HAL_TIM_PWM_Start_IT(timh, TIM_CHANNEL_1);  // -> start it with interrupt
@@ -228,21 +236,21 @@ void timer_1_initialize_start(TIM_HandleTypeDef *timh, TIM_OC_InitTypeDef *outpu
 	HAL_TIM_PWM_Start(timh, TIM_CHANNEL_1); // -> start it without interrupts
 }
 
-void timer_3_initialize_start(TIM_HandleTypeDef *timh3, TIM_IC_InitTypeDef *input_capture_config)
+void timer_2_initialize_start(TIM_HandleTypeDef *timh2, TIM_IC_InitTypeDef *input_capture_config)
 {
 	__HAL_RCC_TIM1_CLK_ENABLE();              // enable TIM1 clock
 
 
 
-	timh3->Instance               = TIM3;
-	timh3->Init.Period            = 0xffff;
-	timh3->Init.Prescaler         = 0;
-	timh3->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
-	timh3->Init.CounterMode       = TIM_COUNTERMODE_UP;
-	timh3->Init.RepetitionCounter = 0;
-	timh3->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	timh2->Instance               = TIM2;
+	timh2->Init.Period            = 0xffff;
+	timh2->Init.Prescaler         = 0;
+	timh2->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	timh2->Init.CounterMode       = TIM_COUNTERMODE_UP;
+	timh2->Init.RepetitionCounter = 0;
+	timh2->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 
-	HAL_TIM_IC_Init(timh3);            //Configure the timer
+	HAL_TIM_IC_Init(timh2);            //Configure the timer
 
 	/*##-2- Configure the Input Capture channel ################################*/
 	/* Configure the Input Capture of channel 2 */
@@ -250,9 +258,9 @@ void timer_3_initialize_start(TIM_HandleTypeDef *timh3, TIM_IC_InitTypeDef *inpu
 	input_capture_config->ICSelection = TIM_ICSELECTION_DIRECTTI;
 	input_capture_config->ICPrescaler = TIM_ICPSC_DIV1;
 	input_capture_config->ICFilter    = 0;
-	HAL_TIM_IC_ConfigChannel(timh3, input_capture_config, TIM_CHANNEL_2);
+	HAL_TIM_IC_ConfigChannel(timh2, input_capture_config, TIM_CHANNEL_1);
 
-	HAL_TIM_IC_Start_IT(timh3, TIM_CHANNEL_2); // -> start it with interrupts
+	HAL_TIM_IC_Start_IT(timh2, TIM_CHANNEL_1); // -> start it with interrupts
 }
 
 void EXTI9_5_IRQHandler()
@@ -273,6 +281,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	else if (GPIO_Pin == GPIO_PIN_10 && TIM1->CCR1 <= 900)
 		TIM1->CCR1 += 100;
 	printf("pulse set: %d\n", (int)TIM1->CCR1);
+}
+
+void TIM2_IRQHandler()
+{
+	HAL_TIM_IRQHandler(&timh2);
+}
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *timh2)
+{
+	if (fb_val != 0)
+		fb_val = 60000 / ((HAL_GetTick() - fb_tick) * 2);
+	fb_tick = HAL_GetTick();
+	printf("%d\n", (int)fb_val);
 }
 /**
  * @brief  Retargets the C library printf function to the USART.
