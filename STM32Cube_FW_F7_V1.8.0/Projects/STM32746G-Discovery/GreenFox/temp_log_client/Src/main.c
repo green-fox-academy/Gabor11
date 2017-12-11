@@ -48,14 +48,29 @@
   */ 
 
 /* Private typedef -----------------------------------------------------------*/
+typedef struct {
+    uint8_t * buffer;
+    size_t head;
+    size_t tail;
+    size_t size; //of the buffer
+} circular_buf_t;
+
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef uart_handle;
 /* RNG handler declaration */
 RNG_HandleTypeDef RngHandle;
+char ch;
+char data;
 
 /* Private function prototypes -----------------------------------------------*/
+
+int circular_buf_reset(circular_buf_t * cbuf);
+int circular_buf_put(circular_buf_t * cbuf, uint8_t data);
+int circular_buf_get(circular_buf_t * cbuf, uint8_t * data);
+int circular_buf_empty(circular_buf_t cbuf);
+int circular_buf_full(circular_buf_t cbuf);
 
 #ifdef __GNUC__
 /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
@@ -153,13 +168,29 @@ int main(void)
     uart_handle.Instance = USART1;
     HAL_UART_Init(&uart_handle);
 
+    /* SETTING UP OUR CIRCULAR BUFFER */
+
+    circular_buf_t cbuf;
+    cbuf.size = 10;
+    cbuf.buffer = malloc(cbuf.size);
+    circular_buf_reset(&cbuf);
+    char *content;
+
   while (1) {
-	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, SET);
-	  printf("led set\n");
-	  HAL_Delay(500);
-	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, RESET);
-	  printf("led reset\n");
-	  HAL_Delay(500);
+	  HAL_UART_Receive(&uart_handle, &ch, 1, 200);
+	  if (ch != '\n')
+		  circular_buf_put(&cbuf, ch);
+	  else {
+		  for (int i = 0; i < cbuf.size; i++) {
+			  if (cbuf.head == cbuf.tail)
+				  break;
+			  circular_buf_get(&cbuf, &data);
+			  printf("%c", data);
+		  }
+		  printf("\n");
+		  ch = '\0';
+	  }
+
   }
   /*
   BSP_LED_Init(LED_GREEN);
@@ -234,6 +265,70 @@ int main(void)
   * @param  None
   * @retval None
   */
+
+int circular_buf_reset(circular_buf_t * cbuf)
+{
+    int r = -1;
+
+    if(cbuf)
+    {
+        cbuf->head = 0;
+        cbuf->tail = 0;
+        r = 0;
+    }
+
+    return r;
+}
+
+int circular_buf_empty(circular_buf_t cbuf)
+{
+    // We define empty as head == tail
+    return (cbuf.head == cbuf.tail);
+}
+
+int circular_buf_full(circular_buf_t cbuf)
+{
+    // We determine "full" case by head being one position behind the tail
+    // Note that this means we are wasting one space in the buffer!
+    // Instead, you could have an "empty" flag and determine buffer full that way
+    return ((cbuf.head + 1) % cbuf.size) == cbuf.tail;
+}
+
+int circular_buf_put(circular_buf_t * cbuf, uint8_t data)
+{
+    int r = -1;
+
+    if(cbuf)
+    {
+        cbuf->buffer[cbuf->head] = data;
+        cbuf->head = (cbuf->head + 1) % cbuf->size;
+
+        if(cbuf->head == cbuf->tail)
+        {
+            cbuf->tail = (cbuf->tail + 1) % cbuf->size;
+        }
+
+        r = 0;
+    }
+
+    return r;
+}
+
+int circular_buf_get(circular_buf_t * cbuf, uint8_t * data)
+{
+    int r = -1;
+
+    if(cbuf && data && !circular_buf_empty(*cbuf))
+    {
+        *data = cbuf->buffer[cbuf->tail];
+        cbuf->tail = (cbuf->tail + 1) % cbuf->size;
+
+        r = 0;
+    }
+
+    return r;
+}
+
 PUTCHAR_PROTOTYPE
 {
   /* Place your implementation of fputc here */
