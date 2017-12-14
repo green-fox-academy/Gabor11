@@ -63,8 +63,13 @@
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef UartHandle;
 RTC_HandleTypeDef RtcHandle;
+TIM_HandleTypeDef TimHandle;
 I2C_HandleTypeDef i2ch;
 GPIO_InitTypeDef gpio_init;
+RTC_DateTypeDef dDate;
+RTC_TimeTypeDef dTime;
+uint8_t Tx = 0;
+uint8_t Rx;
 
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
@@ -77,6 +82,7 @@ static void UART_Config(void);
 static void RTC_Config(void);
 static void RTC_SetDateTime(uint8_t year, uint8_t month, uint8_t day, uint8_t weekday, uint8_t hour, uint8_t minute, uint8_t second);
 void i2c_init();
+void Interrupt_Timer();
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -101,23 +107,19 @@ int main(void) {
     /**
      * Demo for sending date and time in every second
      */
-    RTC_DateTypeDef dDate;
-    RTC_TimeTypeDef dTime;
-    uint8_t data = 0;
-	uint8_t Rx;
+
     while (1) {
-        HAL_RTC_GetTime(&RtcHandle, &dTime, RTC_FORMAT_BIN);
+       /* HAL_RTC_GetTime(&RtcHandle, &dTime, RTC_FORMAT_BIN);
         HAL_RTC_GetDate(&RtcHandle, &dDate, RTC_FORMAT_BIN);
 
-        HAL_I2C_Master_Transmit(&i2ch, I2C_ADDRESS, &data, 1, 100);
+        HAL_I2C_Master_Transmit(&i2ch, I2C_ADDRESS, &Tx, 1, 100);
         HAL_I2C_Master_Receive(&i2ch, I2C_ADDRESS, &Rx, 1, 10000);
-
 
         printf("%d.%d.%d. %d:%d:%d", (dDate.Year + 2000), dDate.Month,
                 dDate.Date, dTime.Hours, dTime.Minutes, dTime.Seconds);
-        printf("\t  %d\n", Rx);
+        printf("  %d\n", Rx);
 
-        HAL_Delay(1000);
+        HAL_Delay(1000);*/
     }
 }
 
@@ -167,6 +169,19 @@ static void RTC_SetDateTime(uint8_t year, uint8_t month, uint8_t day, uint8_t we
     sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
     sTime.StoreOperation = RTC_STOREOPERATION_RESET;
     HAL_RTC_SetTime(&RtcHandle, &sTime, RTC_FORMAT_BIN);
+}
+
+void Interrupt_Timer() {
+	__HAL_RCC_TIM2_CLK_ENABLE();
+
+	TimHandle.Instance               = TIM2;
+	TimHandle.Init.Period            = 16000;
+	TimHandle.Init.Prescaler         = 6750;
+	TimHandle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	TimHandle.Init.CounterMode 		 = TIM_COUNTERMODE_UP;
+	HAL_TIM_Base_Init(&TimHandle);
+	HAL_TIM_Base_Start_IT(&TimHandle);
+
 }
 
 void i2c_init()
@@ -237,6 +252,45 @@ static void Peripherials_Config(void) {
      * I2C init
      */
     i2c_init();
+
+	HAL_NVIC_SetPriority(I2C1_EV_IRQn, 0xe, 0x00);
+	HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
+
+    /*
+     * TIM2 init
+     */
+    Interrupt_Timer();
+
+	HAL_NVIC_SetPriority(TIM2_IRQn, 0xf, 0x00);
+	HAL_NVIC_EnableIRQ(TIM2_IRQn);
+}
+
+/***** INTERRUPTS ******/
+
+void TIM2_IRQHandler() {
+	HAL_TIM_IRQHandler(&TimHandle);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	HAL_I2C_Master_Transmit_IT(&i2ch, I2C_ADDRESS, &Tx, 1);
+}
+
+void I2C1_EV_IRQHandler() {
+	HAL_I2C_EV_IRQHandler(&i2ch);
+}
+
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
+	HAL_I2C_Master_Receive_IT(&i2ch, I2C_ADDRESS, &Rx, 1);
+}
+
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+	HAL_RTC_GetTime(&RtcHandle, &dTime, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&RtcHandle, &dDate, RTC_FORMAT_BIN);
+
+    printf("%d.%d.%d. %d:%d:%d", (dDate.Year + 2000), dDate.Month,
+            dDate.Date, dTime.Hours, dTime.Minutes, dTime.Seconds);
+    printf("  %d\n", Rx);
+
 }
 
 static void UART_Config(void) {
