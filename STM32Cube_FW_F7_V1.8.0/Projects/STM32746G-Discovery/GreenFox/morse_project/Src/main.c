@@ -56,18 +56,19 @@
  */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef enum{
+	WAITING,
+	RECEIVING,
+	SENDING
+}states;
 /* Private define ------------------------------------------------------------*/
-#define OPEN	0b0001
-#define CLOSING	0b0010
-#define CLOSED	0b0100
-#define OPENING	0b1000
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef uart_handle;
 TIM_HandleTypeDef tim_handle;
 GPIO_InitTypeDef gpio_init_structure;
-uint8_t state;
-uint8_t new_state;
+
 
 
 
@@ -91,29 +92,10 @@ void Interrupt_Timer();
  */
 int main(void) {
     Peripherials_Config();
-    state = OPEN;
-    new_state = 101;
 
     while (1) {
     	// need code
-    	while (state == OPEN) {
-    		if (new_state == 101) {
-    			printf("open\n");
-    			new_state = 100;
-    		}
-    	}
-    	while (state == CLOSING) {
 
-    	}
-    	while (state == CLOSED) {
-    		if (new_state == 101) {
-    			printf("closed\n");
-    			new_state = 100;
-    		}
-    	}
-    	while (state == OPENING) {
-
-    	}
     }
 }
 
@@ -121,8 +103,8 @@ void Interrupt_Timer() {
 	__HAL_RCC_TIM2_CLK_ENABLE();
 
 	tim_handle.Instance               = TIM2;
-	tim_handle.Init.Period            = 4000;
-	tim_handle.Init.Prescaler         = 6750;
+	tim_handle.Init.Period            = 1000;
+	tim_handle.Init.Prescaler         = 54000;
 	tim_handle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
 	tim_handle.Init.CounterMode 		 = TIM_COUNTERMODE_UP;
 	HAL_TIM_Base_Init(&tim_handle);
@@ -132,13 +114,7 @@ void Interrupt_Timer() {
 
 
 
-void Shift_state(uint8_t *state)
-{
-	if (*state == 0b1000)
-		*state = 0b0001;
-	else
-		*state <<= 1;
-}
+
 static void Peripherials_Config(void) {
     /* This project template calls firstly two functions in order to configure MPU feature
      and to enable the CPU Cache, respectively MPU_Config() and CPU_CACHE_Enable().
@@ -194,7 +170,14 @@ static void Peripherials_Config(void) {
 	gpio_init_structure.Speed = GPIO_SPEED_FAST;        // port speed to fast
 
 	/* Here is the trick: our mode is interrupt on rising edge */
+	/*
 	gpio_init_structure.Mode = GPIO_MODE_IT_RISING;
+
+	HAL_GPIO_Init(GPIOI, &gpio_init_structure);
+	*/
+	/* Here is the trick: our mode is interrupt on rising and falling edge */
+
+	gpio_init_structure.Mode = GPIO_MODE_IT_RISING_FALLING;
 
 	HAL_GPIO_Init(GPIOI, &gpio_init_structure);
 
@@ -225,64 +208,13 @@ void EXTI15_10_IRQHandler()
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+
+	printf("**** interrupt ****\n");
 	/*
-	 * state change - if possible
+	 * interrupt is thrown when button pressed
 	 */
-	if (state == OPEN || state == CLOSED)
-		Shift_state(&state);
-	if (state == OPENING ) {
-		printf("opening\n");
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		Shift_state(&state);
-		printf("open\n");
-	} else if (state == CLOSING) {
-		printf("closing\n");
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		BSP_LED_Toggle(LED_GREEN);
-		HAL_Delay(500);
-		Shift_state(&state);
-		printf("closed\n");
-	}
+	BSP_LED_Toggle(LED_GREEN);
+
 }
 
 static void UART_Config(void) {
