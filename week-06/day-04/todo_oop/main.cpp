@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
-#include "Task.h"
-#include "Control.h"
+#include "include/Task.h"
+#include "include/Control.h"
 #include <string>
 #include <vector>
 
@@ -17,8 +17,6 @@ int main()
     while(!cntrl.exit()) {
         cntrl.read_proc();
     }
-
-
     return 0;
 }
 

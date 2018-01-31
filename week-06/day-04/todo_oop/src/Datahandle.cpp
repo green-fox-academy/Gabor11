@@ -1,5 +1,6 @@
-#include "Datahandle.h"
+#include "../include/Datahandle.h"
 #include <vector>
+#include <string.h>
 
 
 
@@ -53,8 +54,8 @@ int Datahandle::read_from_file()
     in_file.open(filename.c_str(), ios::in);
     empty_list();
     in_file >> content;
-	for( int i = 0 ; i < strlen() ; i ++ ){
-		cout << names[i];
+	for( int i = 0 ; i < strlen(content); i ++ ){
+		//cout << names[i];
 	};
     in_file.close();
 

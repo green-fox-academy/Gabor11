@@ -1,4 +1,4 @@
-#include "Task.h"
+#include "../include/Task.h"
 #define MAX 2147483647
 
 Task::Task(int num, int progress, string text, int prio)

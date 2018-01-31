@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "Control.h"
+#include "../include/Control.h"
 #define MAX_COMMAND_LENGTH 4
 
 using namespace std;

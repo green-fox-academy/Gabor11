@@ -1,68 +1,31 @@
 # depslib dependency file v1.0
-1510836170 source:c:\users\whistleblower\desktop\myapp\todo_oop\src\task.cpp
-	"Task.h"
-
-1510836761 c:\users\whistleblower\desktop\myapp\todo_oop\include\task.h
-	<string>
-
-1510864827 source:c:\users\whistleblower\desktop\myapp\todo_oop\main.cpp
-	<iostream>
-	"Task.h"
-	"Control.h"
-	<string>
-	<vector>
-
-1510850095 c:\users\whistleblower\desktop\myapp\todo_oop\include\handler.h
-	<vector>
-	<string>
-	"Task.h"
-
-1510850039 source:c:\users\whistleblower\desktop\myapp\todo_oop\src\handler.cpp
-	<iostream>
-	<sstream>
-	<string>
-	<vector>
-	"Handler.h"
-
-1510864827 c:\users\whistleblower\desktop\myapp\todo_oop\include\control.h
-	<vector>
-	<string>
-	"Task.h"
-
-1510874222 source:/home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/src/Task.cpp
-	"Task.h"
-
-1510874222 /home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/include/Task.h
-	<string>
-
-1510914175 source:/home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/main.cpp
+1517433046 source:c:\users\whistleblower\greenfox\gabor11\week-06\day-04\todo_oop\main.cpp
 	<iostream>
 	<stdlib.h>
-	"Task.h"
-	"Control.h"
+	"include/Task.h"
+	"include/Control.h"
 	<string>
 	<vector>
 
-1510913293 /home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/include/Control.h
+1510836761 c:\users\whistleblower\greenfox\gabor11\week-06\day-04\todo_oop\include\task.h
+	<string>
+
+1517433227 c:\users\whistleblower\greenfox\gabor11\week-06\day-04\todo_oop\include\control.h
 	<vector>
 	<string>
 	"Task.h"
 	"Datahandle.h"
 
-1510918502 /home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/include/Datahandle.h
+1517433226 c:\users\whistleblower\greenfox\gabor11\week-06\day-04\todo_oop\include\datahandle.h
 	<vector>
 	<iostream>
 	<fstream>
 	"Task.h"
 
-1510919657 source:/home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/src/Control.cpp
+1517433134 source:c:\users\whistleblower\greenfox\gabor11\week-06\day-04\todo_oop\src\control.cpp
 	<iostream>
 	<sstream>
 	<string>
 	<vector>
-	"Control.h"
-
-1510918681 source:/home/whistleblower/Documents/greenfox/Gabor11/week-06/day-04/todo_oop/src/Datahandle.cpp
-	"Datahandle.h"
-	<vector>
+	"../include/Control.h"
 
