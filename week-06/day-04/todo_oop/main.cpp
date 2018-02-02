@@ -10,6 +10,9 @@ using namespace std;
 void start_screen();
 void clear();
 
+/*
+ * Main function.
+ */
 int main()
 {
     Control cntrl;
@@ -20,6 +23,9 @@ int main()
     return 0;
 }
 
+/*
+ * Shows the list of commands.
+ */
 void start_screen()
 {
     clear();
@@ -42,6 +48,9 @@ void start_screen()
     clear();
 }
 
+/*
+ * Calls the OS to clear the screen. (works only in windows)
+ */
 void clear()
 {
     system("clear");
