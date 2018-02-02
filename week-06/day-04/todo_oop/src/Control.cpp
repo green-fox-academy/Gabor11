@@ -6,7 +6,9 @@
 #define MAX_COMMAND_LENGTH 4
 
 using namespace std;
-
+/*
+ * Constructor of 'Control' class. Initializes the commands that must be recognized.
+ */
 Control::Control()
 {
     //initializing commands vector
@@ -29,7 +31,11 @@ Control::Control()
 }
 
 
-
+/*
+ * This function calls the 'tokenize' function which splits its input into tokens. 
+ * After that it processes the command by directing control flow to the appropriate 
+ * function.
+ */
 int Control::read_proc()
 {
 
@@ -99,6 +105,9 @@ switch (switcher) {
     tokens.clear();
 }
 
+/*
+ * This function splits its input into tokens and pushes it to 'tokens' vector.
+ */
 void Control::tokenize(string input)
 {
     string str = input;
@@ -110,6 +119,9 @@ void Control::tokenize(string input)
 
 }
 
+/*
+ * This function returns the '_exit' flag. As a loop parameter this flag can induce exiting from the program.
+ */
 bool Control::exit()
 {
     return _exit;
