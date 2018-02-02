@@ -14,3 +14,7 @@ Multiple peripherals/ my impact on the serving-car-project:
 
 https://github.com/greenfox-academy/kryptonite/tree/dev_line_following/serving_car/Src
 
+Coding task for the exam:
+
+https://github.com/greenfox-academy/Gabor11/blob/master/final_exam/exam1.c
+
