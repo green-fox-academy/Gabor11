@@ -10,6 +10,9 @@ int main()
     return 0;
 }
 
+/*
+ *Create a function that takes an array of float numbers and returns with the sum of those numbers
+ */
 float sum(float val[], int size)
 {
     float ret = 0;
