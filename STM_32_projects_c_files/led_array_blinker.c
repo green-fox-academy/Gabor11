@@ -1,4 +1,4 @@
- /**
+/**
   ******************************************************************************
   * @file    Templates/Src/main.c 
   * @author  MCD Application Team
@@ -37,7 +37,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <string.h>
 
 /** @addtogroup STM32F7xx_HAL_Examples
   * @{
@@ -49,32 +48,9 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define ADDRESS 0b1001000
-#define I2C_ADDRESS ADDRESS << 1
-#define BUFFER_SIZE 1
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef uarth;
-I2C_HandleTypeDef i2ch;
-GPIO_InitTypeDef gpio_init;
-uint8_t data;
-uint8_t *buffer;
-
 /* Private function prototypes -----------------------------------------------*/
-void system_init();
-void print_banner();
-void uart_init();
-void i2c_init();
-void gpio_initalize();
-
-#ifdef __GNUC__
-/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
-   set to 'Yes') calls __io_putchar() */
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
-
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 static void MPU_Config(void);
@@ -82,7 +58,13 @@ static void CPU_CACHE_Enable(void);
 
 /* Private functions ---------------------------------------------------------*/
 
-void system_init()
+/**
+  * @brief  Main program
+  * @param  None
+  * @retval None
+  */
+
+void initialize()
 {
 	  /* This project template calls firstly two functions in order to configure MPU feature
 	     and to enable the CPU Cache, respectively MPU_Config() and CPU_CACHE_Enable().
@@ -107,144 +89,130 @@ void system_init()
 	  /* Configure the System clock to have a frequency of 216 MHz */
 	  SystemClock_Config();
 
-	  BSP_LED_Init(LED_GREEN);
-	  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_GPIO);
-}
 
-void print_banner()
-{
-	printf("   #    ####    #### ");
-	printf("   #   #    #  #    #");
-	printf("   #        #  #     ");
-	printf("   #       #   #     ");
-	printf("   #      #    #     ");
-	printf("   #     #     #    #");
-	printf("   #   ######   #### ");
-}
+	  /* Add your application code here     */
+	  //BSP_LED_Init(LED_GREEN);
+	  //BSP_LED_On(LED_GREEN);
 
-void uart_init()
-{
-	    /* Enable GPIO clock */
-	  	__HAL_RCC_GPIOA_CLK_ENABLE();
-	  	__HAL_RCC_GPIOB_CLK_ENABLE();
+	  __HAL_RCC_GPIOA_CLK_ENABLE();    // we need to enable the GPIOA port's clock first
+	  __HAL_RCC_GPIOF_CLK_ENABLE();
 
-	    /* Enable USART clock */
-	    __HAL_RCC_USART1_CLK_ENABLE();
+	  GPIO_InitTypeDef p0;
+	 /* GPIO_InitTypeDef p1;
+	  GPIO_InitTypeDef p2;
+	  GPIO_InitTypeDef p3;
+	  GPIO_InitTypeDef p4; */
 
-	    /* Configure USART Tx as alternate function */
-	    gpio_init.Pin = GPIO_PIN_9;
-	    gpio_init.Mode = GPIO_MODE_AF_PP;
-	    gpio_init.Speed = GPIO_SPEED_FAST;
-	    gpio_init.Pull = GPIO_PULLUP;
-	    gpio_init.Alternate = GPIO_AF7_USART1;
-	    HAL_GPIO_Init(GPIOA, &gpio_init);
+	  p0.Pin = GPIO_PIN_0;            // this is about PIN 0
+	  p0.Mode = GPIO_MODE_OUTPUT_PP;  // Configure as output with push-up-down enabled
+	  p0.Pull = GPIO_PULLDOWN;        // the push-up-down should work as pulldown
+	  p0.Speed = GPIO_SPEED_HIGH;     // we need a high-speed output
 
-	    /* Configure USART Rx as alternate function */
-	    gpio_init.Pin = GPIO_PIN_7;
-	    gpio_init.Mode = GPIO_MODE_AF_PP;
-	    gpio_init.Alternate = GPIO_AF7_USART1;
-	    HAL_GPIO_Init(GPIOB, &gpio_init);
+	  HAL_GPIO_Init(GPIOA, &p0);      // initialize the pin on GPIOA port with HAL
 
-	    /* USART configuration */
-	    uarth.Init.BaudRate   = 115200;
-	    uarth.Init.WordLength = UART_WORDLENGTH_8B;
-	    uarth.Init.StopBits   = UART_STOPBITS_1;
-	    uarth.Init.Parity     = UART_PARITY_NONE;
-	    uarth.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-	    uarth.Init.Mode       = UART_MODE_TX_RX;
+	  GPIO_InitTypeDef p1 = p0;
+	  p1.Pin = GPIO_PIN_10;            // this is about PIN 1
 
-	    uarth.Instance = USART1;
-	    HAL_UART_Init(&uarth);
-}
+	  HAL_GPIO_Init(GPIOF, &p1);
 
-void i2c_init()
-{
-	__HAL_RCC_GPIOB_CLK_ENABLE();                           // enable GPIO clock
-	__HAL_RCC_I2C1_CLK_ENABLE();                          // enable the clock of the used peripheral
+	  GPIO_InitTypeDef p2 = p0;
+	  p2.Pin = GPIO_PIN_9;            // this is about PIN 2
 
-    // configure GPIOs for I2C data and clock lines
-    gpio_init.Speed 	 	 = GPIO_SPEED_FAST;
-    gpio_init.Pull			 = GPIO_PULLUP;
-	gpio_init.Pin 			 = GPIO_PIN_8 | GPIO_PIN_9;
-	gpio_init.Mode           = GPIO_MODE_AF_OD;      //configure in open drain mode
-	gpio_init.Alternate      = GPIO_AF4_I2C1;
+	  HAL_GPIO_Init(GPIOF, &p2);
 
+	  GPIO_InitTypeDef p3 = p0;
+	  p3.Pin = GPIO_PIN_8;            // this is about PIN 3
 
-	HAL_GPIO_Init(GPIOB, &gpio_init);
+	  HAL_GPIO_Init(GPIOF, &p3);
 
-	// defining the I2C configuration structure
+	  GPIO_InitTypeDef p4 = p0;
+	  p4.Pin = GPIO_PIN_7;            // this is about PIN 4
 
-	i2ch.Instance             = I2C1;
-	i2ch.Init.Timing          = 0x40912732;
-	i2ch.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
-	//i2ch.Init.OwnAddress1     = 0b1001000;
-	//i2ch.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-	//i2ch.Init.OwnAddress2     = 0xFF;
-	//i2ch.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-	//i2ch.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
-
-	HAL_I2C_Init(&i2ch);
+	  HAL_GPIO_Init(GPIOF, &p4);
 
 }
-
-void gpio_initalize()
-{
-
+/* 
+ * This function lights up an LED which is connected to the chosen pin
+ * parameter: uint8_t pin 
+ *   - it holds the number of the LED which is needed to be lit
+ */
+void light_up(uint8_t pin) {
+	switch (pin) {
+	case 0:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 1:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 2:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 3:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	case 4:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_SET);   // setting the pin to 1
+		break;
+	}
 }
 
-/**
-  * @brief  Main program
-  * @param  None
-  * @retval None
-  */
-int main(void)
+/* 
+ * This function turns off the chosen LED
+ * parameter: uint8_t pin
+ *   - it is the number of the pin whose LED should be turned off
+ */
+void turn_off(uint8_t pin)
 {
-	system_init();
-	uart_init();
-	i2c_init();
-	print_banner();
-
-  /* Add your application code here
-     */
-
-	data = 0;
-	uint8_t Rx;
-
-
-  while (1)
-  {
-	  HAL_I2C_Master_Transmit(&i2ch, I2C_ADDRESS, &data, 1, 100);
-	  HAL_I2C_Master_Receive(&i2ch, I2C_ADDRESS, &Rx, 1, 10000);
-	  printf("%d\n", Rx);
-	  HAL_Delay(5000);
-
-
-
-
-	  /*
-	  while(HAL_GPIO_ReadPin(GPIOI, GPIO_PIN_11) == 1) {
-		  BSP_LED_On(LED_GREEN);
-		  printf("led is on\n");
-	  }
-	  BSP_LED_Off(LED_GREEN);
-	  printf("led is off\n");
-	  */
-
-  }
+	switch (pin) {
+	case 0:
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 1:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 2:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 3:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	case 4:
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, GPIO_PIN_RESET);   // setting the pin to 1
+		break;
+	}
 }
 
-/**
-  * @brief  Retargets the C library printf function to the USART.
-  * @param  None
-  * @retval None
-  */
-PUTCHAR_PROTOTYPE
+ /* 
+ * In the main() function the logic of lighting up the LEDs in array is implemented
+ * parameter: -
+ */
+int main()
 {
-  /* Place your implementation of fputc here */
-  /* e.g. write a character to the EVAL_COM1 and Loop until the end of transmission */
-  HAL_UART_Transmit(&uarth, (uint8_t *)&ch, 1, 0xFFFF);
+	initialize();
 
-  return ch;
+	while (1) {
+		light_up(0);
+		HAL_Delay(200);
+		turn_off(0);
+
+		light_up(1);
+		HAL_Delay(200);
+		turn_off(1);
+
+		light_up(2);
+		HAL_Delay(200);
+		turn_off(2);
+
+		light_up(3);
+		HAL_Delay(200);
+		turn_off(3);
+
+		light_up(4);
+		HAL_Delay(200);
+		turn_off(4);
+
+
+	}
 }
 
 /**

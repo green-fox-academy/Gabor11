@@ -1,4 +1,4 @@
- /**
+/**
   ******************************************************************************
   * @file    Templates/Src/main.c 
   * @author  MCD Application Team
@@ -37,7 +37,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <string.h>
 
 /** @addtogroup STM32F7xx_HAL_Examples
   * @{
@@ -49,148 +48,15 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define ADDRESS 0b1001000
-#define I2C_ADDRESS ADDRESS << 1
-#define BUFFER_SIZE 1
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef uarth;
-I2C_HandleTypeDef i2ch;
-GPIO_InitTypeDef gpio_init;
-uint8_t data;
-uint8_t *buffer;
-
 /* Private function prototypes -----------------------------------------------*/
-void system_init();
-void print_banner();
-void uart_init();
-void i2c_init();
-void gpio_initalize();
-
-#ifdef __GNUC__
-/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
-   set to 'Yes') calls __io_putchar() */
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
-
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 
 /* Private functions ---------------------------------------------------------*/
-
-void system_init()
-{
-	  /* This project template calls firstly two functions in order to configure MPU feature
-	     and to enable the CPU Cache, respectively MPU_Config() and CPU_CACHE_Enable().
-	     These functions are provided as template implementation that User may integrate
-	     in his application, to enhance the performance in case of use of AXI interface
-	     with several masters. */
-
-	  /* Configure the MPU attributes as Write Through */
-	  MPU_Config();
-
-	  /* Enable the CPU Cache */
-	  CPU_CACHE_Enable();
-
-	  /* STM32F7xx HAL library initialization:
-	       - Configure the Flash ART accelerator on ITCM interface
-	       - Configure the Systick to generate an interrupt each 1 msec
-	       - Set NVIC Group Priority to 4
-	       - Low Level Initialization
-	     */
-	  HAL_Init();
-
-	  /* Configure the System clock to have a frequency of 216 MHz */
-	  SystemClock_Config();
-
-	  BSP_LED_Init(LED_GREEN);
-	  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_GPIO);
-}
-
-void print_banner()
-{
-	printf("   #    ####    #### ");
-	printf("   #   #    #  #    #");
-	printf("   #        #  #     ");
-	printf("   #       #   #     ");
-	printf("   #      #    #     ");
-	printf("   #     #     #    #");
-	printf("   #   ######   #### ");
-}
-
-void uart_init()
-{
-	    /* Enable GPIO clock */
-	  	__HAL_RCC_GPIOA_CLK_ENABLE();
-	  	__HAL_RCC_GPIOB_CLK_ENABLE();
-
-	    /* Enable USART clock */
-	    __HAL_RCC_USART1_CLK_ENABLE();
-
-	    /* Configure USART Tx as alternate function */
-	    gpio_init.Pin = GPIO_PIN_9;
-	    gpio_init.Mode = GPIO_MODE_AF_PP;
-	    gpio_init.Speed = GPIO_SPEED_FAST;
-	    gpio_init.Pull = GPIO_PULLUP;
-	    gpio_init.Alternate = GPIO_AF7_USART1;
-	    HAL_GPIO_Init(GPIOA, &gpio_init);
-
-	    /* Configure USART Rx as alternate function */
-	    gpio_init.Pin = GPIO_PIN_7;
-	    gpio_init.Mode = GPIO_MODE_AF_PP;
-	    gpio_init.Alternate = GPIO_AF7_USART1;
-	    HAL_GPIO_Init(GPIOB, &gpio_init);
-
-	    /* USART configuration */
-	    uarth.Init.BaudRate   = 115200;
-	    uarth.Init.WordLength = UART_WORDLENGTH_8B;
-	    uarth.Init.StopBits   = UART_STOPBITS_1;
-	    uarth.Init.Parity     = UART_PARITY_NONE;
-	    uarth.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-	    uarth.Init.Mode       = UART_MODE_TX_RX;
-
-	    uarth.Instance = USART1;
-	    HAL_UART_Init(&uarth);
-}
-
-void i2c_init()
-{
-	__HAL_RCC_GPIOB_CLK_ENABLE();                           // enable GPIO clock
-	__HAL_RCC_I2C1_CLK_ENABLE();                          // enable the clock of the used peripheral
-
-    // configure GPIOs for I2C data and clock lines
-    gpio_init.Speed 	 	 = GPIO_SPEED_FAST;
-    gpio_init.Pull			 = GPIO_PULLUP;
-	gpio_init.Pin 			 = GPIO_PIN_8 | GPIO_PIN_9;
-	gpio_init.Mode           = GPIO_MODE_AF_OD;      //configure in open drain mode
-	gpio_init.Alternate      = GPIO_AF4_I2C1;
-
-
-	HAL_GPIO_Init(GPIOB, &gpio_init);
-
-	// defining the I2C configuration structure
-
-	i2ch.Instance             = I2C1;
-	i2ch.Init.Timing          = 0x40912732;
-	i2ch.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
-	//i2ch.Init.OwnAddress1     = 0b1001000;
-	//i2ch.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-	//i2ch.Init.OwnAddress2     = 0xFF;
-	//i2ch.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-	//i2ch.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
-
-	HAL_I2C_Init(&i2ch);
-
-}
-
-void gpio_initalize()
-{
-
-}
 
 /**
   * @brief  Main program
@@ -199,52 +65,41 @@ void gpio_initalize()
   */
 int main(void)
 {
-	system_init();
-	uart_init();
-	i2c_init();
-	print_banner();
+  /* This project template calls firstly two functions in order to configure MPU feature 
+     and to enable the CPU Cache, respectively MPU_Config() and CPU_CACHE_Enable().
+     These functions are provided as template implementation that User may integrate 
+     in his application, to enhance the performance in case of use of AXI interface 
+     with several masters. */ 
+  
+  /* Configure the MPU attributes as Write Through */
+  MPU_Config();
 
-  /* Add your application code here
+  /* Enable the CPU Cache */
+  CPU_CACHE_Enable();
+
+  /* STM32F7xx HAL library initialization:
+       - Configure the Flash ART accelerator on ITCM interface
+       - Configure the Systick to generate an interrupt each 1 msec
+       - Set NVIC Group Priority to 4
+       - Low Level Initialization
      */
+  HAL_Init();
 
-	data = 0;
-	uint8_t Rx;
+  /* Configure the System clock to have a frequency of 216 MHz */
+  SystemClock_Config();
 
-
+  //TODO:
+  //Initialization the push button and the led with using BSP
+  
+  //Turn the led on to validate the initialization is occured.
+  
+  /* Add your application code here     */
+  /* Infinite loop */
   while (1)
   {
-	  HAL_I2C_Master_Transmit(&i2ch, I2C_ADDRESS, &data, 1, 100);
-	  HAL_I2C_Master_Receive(&i2ch, I2C_ADDRESS, &Rx, 1, 10000);
-	  printf("%d\n", Rx);
-	  HAL_Delay(5000);
-
-
-
-
-	  /*
-	  while(HAL_GPIO_ReadPin(GPIOI, GPIO_PIN_11) == 1) {
-		  BSP_LED_On(LED_GREEN);
-		  printf("led is on\n");
-	  }
-	  BSP_LED_Off(LED_GREEN);
-	  printf("led is off\n");
-	  */
-
+	  //TODO:
+	  //Write a simple program witch flashes(toggle) the led when the button is pressed
   }
-}
-
-/**
-  * @brief  Retargets the C library printf function to the USART.
-  * @param  None
-  * @retval None
-  */
-PUTCHAR_PROTOTYPE
-{
-  /* Place your implementation of fputc here */
-  /* e.g. write a character to the EVAL_COM1 and Loop until the end of transmission */
-  HAL_UART_Transmit(&uarth, (uint8_t *)&ch, 1, 0xFFFF);
-
-  return ch;
 }
 
 /**

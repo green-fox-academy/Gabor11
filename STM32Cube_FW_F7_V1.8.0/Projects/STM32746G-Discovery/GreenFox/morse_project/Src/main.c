@@ -58,19 +58,57 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef enum{
 	WAITING,
-	RECEIVING,
+	MORSE_SIGNAL,
+	MORSE_BREAK,
 	SENDING
-}states;
-/* Private define ------------------------------------------------------------*/
+}STATES;
 
+typedef enum {
+	SIGNAL0,
+	SIGNAL1,
+	SIGNAL_TOO_SHORT,
+	SIGNAL_TOO_LONG,
+	WAITING_2_SIGNAL,
+	BREAK_2_SENDING,
+	SENDING_2_WAITING
+}TRANSITION;
+
+/*
+ * WAITING:
+ * 		- the tickstart, tickfin, startflag variables are set to default (0) and the morse_char is set to 1.
+ * 		- transition only allowed to RECEIVING state
+ * MORSE_SIGNAL:
+ * 		- we enter this state as the first interrupt arrives from the button
+ * 		- tickstart: stores the initial clocktime (rising edge - pushing the button)
+ * 		- tickfin: empty ..
+ * 		- startflag: set to 1 with the first interrupt and back to 0 with the next one (helps to control which of the two above should be written)
+ * 		- morse_char: the value of one "morse-bit" is shifted into it after the "evaluate()" function evaluated which value should be given to it
+ *
+ * MORSE_BREAK:
+ * 		- tickfin: stores the second clocktime (falling edge - releasing the button)
+ * SENDING:
+ * 		- morse_char: this value should be used to look up the char which should be sent to the serial port
+ * 		- if the character cannot be evaluated (not in the list) it should just shift to the next state (WAITING) without sending..
+ * 		- sending the character (printf())..
+ * 		- after it goes to the next state (WAITING)
+ *
+ */
+
+typedef struct{
+	STATES state;
+	uint16_t tickstart;
+	uint8_t startflag; // if 'tickstart' is set it must be 1 else 0.
+	uint16_t tickfin;
+	uint8_t morse_char;
+}STATE;
+/* Private define ------------------------------------------------------------*/
+#define PERIODE		10000
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef uart_handle;
 TIM_HandleTypeDef tim_handle;
 GPIO_InitTypeDef gpio_init_structure;
-
-
-
+STATE st;
 
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
@@ -80,7 +118,10 @@ static void CPU_CACHE_Enable(void);
 
 static void Peripherials_Config(void);
 static void UART_Config(void);
-void Interrupt_Timer();
+void interrupt_timer();
+void second_timer();
+uint16_t get_tick_tim2();
+uint8_t evaluate();
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -92,18 +133,34 @@ void Interrupt_Timer();
  */
 int main(void) {
     Peripherials_Config();
+    init_state_machine();
 
     while (1) {
-    	// need code
+    	switch (st.state) {
+    	case WAITING:
+
+    		break;
+    	case MORSE_SIGNAL:
+
+    		break;
+    	case MORSE_BREAK:
+
+    		break;
+    	case SENDING:
+
+    		break;
+    	default:
+    		break;
+    	}
 
     }
 }
 
-void Interrupt_Timer() {
+void interrupt_timer() {
 	__HAL_RCC_TIM2_CLK_ENABLE();
 
 	tim_handle.Instance               = TIM2;
-	tim_handle.Init.Period            = 1000;
+	tim_handle.Init.Period            = PERIODE;
 	tim_handle.Init.Prescaler         = 54000;
 	tim_handle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
 	tim_handle.Init.CounterMode 		 = TIM_COUNTERMODE_UP;
@@ -112,6 +169,18 @@ void Interrupt_Timer() {
 
 }
 
+void second_timer() {
+	__HAL_RCC_TIM3_CLK_ENABLE();
+
+	tim_handle.Instance               = TIM3;
+	tim_handle.Init.Period            = 750;
+	tim_handle.Init.Prescaler         = 54000;
+	tim_handle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	tim_handle.Init.CounterMode 		 = TIM_COUNTERMODE_UP;
+	HAL_TIM_Base_Init(&tim_handle);
+	HAL_TIM_Base_Start_IT(&tim_handle);
+
+}
 
 
 
@@ -147,7 +216,7 @@ static void Peripherials_Config(void) {
     /*
      * TIM2 init
      */
-    Interrupt_Timer();
+    interrupt_timer();
 
 	HAL_NVIC_SetPriority(TIM2_IRQn, 0xf, 0x0);
 	HAL_NVIC_SetPriority(SysTick_IRQn, 0xe, 0x0);
@@ -169,12 +238,6 @@ static void Peripherials_Config(void) {
 	gpio_init_structure.Pull = GPIO_NOPULL;
 	gpio_init_structure.Speed = GPIO_SPEED_FAST;        // port speed to fast
 
-	/* Here is the trick: our mode is interrupt on rising edge */
-	/*
-	gpio_init_structure.Mode = GPIO_MODE_IT_RISING;
-
-	HAL_GPIO_Init(GPIOI, &gpio_init_structure);
-	*/
 	/* Here is the trick: our mode is interrupt on rising and falling edge */
 
 	gpio_init_structure.Mode = GPIO_MODE_IT_RISING_FALLING;
@@ -190,6 +253,122 @@ static void Peripherials_Config(void) {
 
 }
 
+void init_state_machine()
+{
+	/* SETTING UP STATE LIKE IN "WAITING" */
+    st.state = WAITING;
+    st.tickstart = 0;
+    st.startflag = 0;
+    st.tickfin = 0;
+    st.morse_char = 1;
+}
+
+void next_state()
+{
+	switch (st.state) {
+	case WAITING:
+		st.state = MORSE_SIGNAL;
+		break;
+	case MORSE_SIGNAL:
+		st.state = MORSE_BREAK;
+		break;
+	case MORSE_BREAK:
+		st.state = SENDING;
+		break;
+	case SENDING:
+	    st.state = WAITING;
+	    st.tickstart = 0;
+	    st.startflag = 0;
+	    st.tickfin = 0;
+	    st.morse_char = 1;
+		break;
+	default:
+		break;
+	}
+}
+
+void morse_switch()
+{
+	switch (st.state) {
+	case MORSE_SIGNAL:
+		st.state = MORSE_BREAK;
+		break;
+	case MORSE_BREAK:
+		st.state = MORSE_SIGNAL;
+		break;
+	default:
+		break;
+	}
+}
+
+char look_up(uint8_t morse_char)
+{
+	switch (morse_char) {
+	case 0b101:
+		return 'a';
+	case 0b11010:
+		return 'c';
+	case 0b100:
+		return 'i';
+	case 0b1111:
+		return 'o';
+	case 0b1000:
+		return 's';
+	}
+}
+
+uint16_t get_tick_tim2()
+{
+	return TIM2->CNT;
+}
+
+uint8_t evaluate()
+{
+	/*
+
+	switch(st.state) {
+	case WAITING:
+		next_state();
+		return evaluate();
+		break;
+	case MORSE_SIGNAL:
+		// in case the timer would have been overflown
+		if (st.tickstart >= st.tickfin) {
+			if ((10000 - st.tickstart + st.tickfin) > 25 && (10000 - st.tickstart + st.tickfin) < 250)
+				return 0;
+			else if ((10000 - st.tickstart + st.tickfin) > 250 && (10000 - st.tickstart + st.tickfin) < 750)
+				return 1;
+			else if ((10000 - st.tickstart + st.tickfin) > 750)
+				return 2; // too long signal
+			else
+				return 3; // too short signal
+		} else {
+			if ((st.tickfin - st.tickstart) > 25 && (st.tickfin - st.tickstart) < 250)
+				return 0;
+			else if ((st.tickfin - st.tickstart) > 250 && (st.tickfin - st.tickstart) < 750)
+				return 1;
+			else if ((st.tickfin - st.tickstart) > 750)
+				return 2; // too long signal
+			else
+				return 3; // too short signal
+		}
+		break;
+	case MORSE_BREAK:
+		st.state = SENDING;
+		break;
+	case SENDING:
+	    st.state = WAITING;
+	    st.tickstart = 0;
+	    st.startflag = 0;
+	    st.tickfin = 0;
+	    st.morse_char = 1;
+		break;
+	default:
+		break;
+		*/
+	return 0;
+}
+
 /***** INTERRUPTS ******/
 
 void TIM2_IRQHandler() {
@@ -198,7 +377,12 @@ void TIM2_IRQHandler() {
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	// need to be filled
-	BSP_LED_Toggle(LED_GREEN);
+		BSP_LED_Toggle(LED_GREEN);
+		second_timer();
+}
+
+void TIM3_IRQHandler() {
+	HAL_TIM_IRQHandler(&tim_handle);
 }
 
 void EXTI15_10_IRQHandler()
@@ -209,11 +393,41 @@ void EXTI15_10_IRQHandler()
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 
-	printf("**** interrupt ****\n");
+	/*switch (st.state) {
+	case WAITING:
+		st.tickstart = get_tick_tim2();
+		st.startflag = 1;
+		next_state();
+		break;
+	case MORSE_SIGNAL:
+		if(st.startflag == 0 && evaluate(&st.tickstart, &st.tickfin) ) {
+			st.tickstart = get_tick_tim2();
+			st.startflag = 1;
+			morse_switch();
+		} else {
+			st.tickfin = get_tick_tim2();
+			st.startflag = 0;
+			if (evaluate(&st.tickstart, &st.tickfin) == 0 || evaluate(&st.tickstart, &st.tickfin) == 1) {
+				st.morse_char <<= 1;
+				st.morse_char  |= evaluate(&st.tickstart, &st.tickfin);
+			}
+			// lookup function must be called
+		}
+		break;
+	case MORSE_BREAK:
+
+		break;
+	case SENDING:
+
+		break;
+	default:
+		break;
+	}
+	*/
 	/*
 	 * interrupt is thrown when button pressed
 	 */
-	BSP_LED_Toggle(LED_GREEN);
+
 
 }
 
